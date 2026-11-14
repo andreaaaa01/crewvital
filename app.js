@@ -97,7 +97,7 @@
     imgDropped: { es: 'Medición guardada sin la imagen: no queda espacio para fotos.', en: 'Measurement saved without the image: no space left for photos.' },
     reminder: { es: 'Recordatorio de rutina', en: 'Routine reminder' },
     crewTitle: { es: 'Estado de la tripulación', en: 'Crew status' },
-    crewHint: { es: 'Vista del oficial médico: última medición de cada tripulante, ordenada por severidad. Toca "Ver" para abrir su panel.', en: 'Medical officer view: each crew member\'s latest measurement, sorted by severity. Tap "View" to open their dashboard.' },
+    crewHint: { es: 'Vista del oficial médico: última medición de cada tripulante, ordenada por severidad. Toca "Abrir panel" para ver su detalle.', en: 'Medical officer view: each crew member\'s latest measurement, sorted by severity. Tap "Open dashboard" to see their details.' },
     lastData: { es: 'Último dato', en: 'Latest data' },
     view: { es: 'Ver', en: 'View' },
     active: { es: 'Activo', en: 'Active' },
@@ -107,6 +107,14 @@
     remove: { es: 'Quitar', en: 'Remove' },
     removeConfirm: { es: '¿Quitar a este tripulante y borrar sus registros?', en: 'Remove this crew member and delete their logs?' },
     crewDefault: { es: 'Tripulante', en: 'Crew member' },
+    crewNoData: { es: 'Sin mediciones todavía.', en: 'No measurements yet.' },
+    allInRange: { es: 'Todos los indicadores medidos están en rango.', en: 'All measured indicators are in range.' },
+    outOfRange: { es: 'Fuera de rango', en: 'Out of range' },
+    todayRoutine: { es: 'Rutina de hoy', en: 'Today\'s routine' },
+    openPanel: { es: 'Abrir panel', en: 'Open dashboard' },
+    crewMatrix: { es: 'Ver todos los indicadores (tabla)', en: 'See all indicators (table)' },
+    crewRenameHint: { es: 'Edita un nombre y sal del campo para guardarlo.', en: 'Edit a name and leave the field to save it.' },
+    crewAdded: { es: 'Tripulante agregado', en: 'Crew member added' },
     ago: { es: 'hace', en: 'ago' },
     now: { es: 'ahora', en: 'just now' },
     emIntro: { es: 'Elige la situación. Los pasos se adaptan al entorno de misión seleccionado.', en: 'Choose the situation. Steps adapt to the selected mission environment.' },
@@ -635,30 +643,70 @@
   }
 
   /* ---------- render: tripulacion (vista del oficial medico) ---------- */
-  function renderCrew() {
-    var rows = state.crew.map(function (c) {
-      var last = 0;
+  function crewRows() {
+    var t = today();
+    return state.crew.map(function (c, idx) {
+      var last = 0, flags = [], done = 0;
       state.entries.forEach(function (e) { if (e.who === c.id) last = Math.max(last, e.ts); });
-      return { c: c, w: overall(c.id), last: last };
-    }).sort(function (a, b) { return b.w - a.w; });
-    var h = '<div class="box"><h2>' + esc(u('crewTitle')) + '</h2><p class="small muted">' + esc(u('crewHint')) + '</p><div class="scroll"><table><tr><th>' + esc(u('who')) + '</th><th>' + esc(u('status')) + '</th>' +
-      IND.map(function (i) { return '<th>' + esc(T(i.name)) + '</th>'; }).join('') + '<th>' + esc(u('lastData')) + '</th><th></th></tr>';
+      IND.forEach(function (i) {
+        var l = latest(i.id, c.id);
+        if (l && l.state > 0) flags.push({ ind: i, e: l });
+        if (hasEntry(i.id, t, c.id)) done++;
+      });
+      flags.sort(function (a, b) { return b.e.state - a.e.state; });
+      return { c: c, idx: idx, w: overall(c.id), last: last, flags: flags, done: done };
+    }).sort(function (a, b) { return b.w - a.w || (a.w < 0 ? a.idx - b.idx : a.last - b.last) || a.idx - b.idx; });
+  }
+  function crewCard(r) {
+    var on = r.c.id === state.who, pct = Math.round(100 * r.done / IND.length);
+    var h = '<article class="crew-card' + (r.w < 0 ? '' : ' s' + r.w) + (on ? ' on' : '') + '" aria-label="' + esc(r.c.name) + '">' +
+      '<div class="card-h"><b class="crew-name">' + esc(r.c.name) + '</b>' + badge(r.w) + '</div>' +
+      '<div class="meta">' + esc(u('lastData')) + ': ' + (r.last ? esc(ago(r.last)) : '-') + '</div>';
+    if (r.w < 0) h += '<p class="small muted">' + esc(u('crewNoData')) + '</p>';
+    else if (!r.flags.length) h += '<p class="small crew-ok">' + esc(u('allInRange')) + '</p>';
+    else h += '<div class="small muted">' + esc(u('outOfRange')) + ':</div><ul class="crew-flags">' + r.flags.map(function (f) {
+      return '<li>' + badge(f.e.state, T(f.ind.name) + ': ' + valueText(f.e)) + '</li>';
+    }).join('') + '</ul>';
+    h += '<div class="crew-prog"><div class="row small" style="justify-content:space-between"><span>' + esc(u('todayRoutine')) + '</span><span>' + r.done + '/' + IND.length + '</span></div>' +
+      '<div class="bar" role="progressbar" aria-label="' + esc(u('todayRoutine')) + '" aria-valuemin="0" aria-valuemax="' + IND.length + '" aria-valuenow="' + r.done + '"><i style="width:' + pct + '%"></i></div></div>';
+    h += '<div class="row crew-act">' + (on ? '<span class="chip on">' + esc(u('active')) + '</span><button class="btn sm" data-action="tab" data-v="dashboard">' + esc(u('openPanel')) + '</button>'
+      : '<button class="btn sm primary" data-action="viewCrew" data-v="' + esc(r.c.id) + '" aria-label="' + esc(u('openPanel') + ': ' + r.c.name) + '">' + esc(u('openPanel')) + '</button>') +
+      '<button class="btn sm" data-action="crewMeasure" data-v="' + esc(r.c.id) + '">' + esc(u('tab_measure')) + '</button></div>';
+    return h + '</article>';
+  }
+  function renderCrew() {
+    var rows = crewRows(), n = { '-1': 0, 0: 0, 1: 0, 2: 0 };
+    rows.forEach(function (r) { n[r.w]++; });
+    var h = '<h2>' + esc(u('crewTitle')) + '</h2><p class="small muted">' + esc(u('crewHint')) + '</p>';
+    h += '<div class="crew-sum" role="list">' + [2, 1, 0, -1].map(function (s) {
+      return '<div class="crew-stat' + (s < 0 ? '' : ' s' + s) + (n[s] ? '' : ' zero') + '" role="listitem"><span class="stat">' + n[s] + '</span>' + badge(s) + '</div>';
+    }).join('') + '</div>';
+    h += '<div class="grid crew-grid">' + rows.map(crewCard).join('') + '</div>';
+    h += '<details class="box crew-matrix"><summary>' + esc(u('crewMatrix')) + '</summary><div class="scroll"><table><caption class="sr">' + esc(u('crewMatrix')) + '</caption><tr><th scope="col">' + esc(u('who')) + '</th><th scope="col">' + esc(u('status')) + '</th>' +
+      IND.map(function (i) { return '<th scope="col">' + esc(T(i.name)) + '</th>'; }).join('') + '</tr>';
     rows.forEach(function (r) {
-      h += '<tr><td><b>' + esc(r.c.name) + '</b></td><td>' + badge(r.w) + '</td>';
+      h += '<tr><th scope="row">' + esc(r.c.name) + '</th><td>' + badge(r.w) + '</td>';
       IND.forEach(function (i) {
         var l = latest(i.id, r.c.id);
         h += '<td>' + (l ? badge(l.state, valueText(l)) : '<span class="muted">-</span>') + '</td>';
       });
-      h += '<td>' + (r.last ? esc(ago(r.last)) : '-') + '</td><td>' + (r.c.id === state.who ? '<span class="chip on">' + esc(u('active')) + '</span>' : '<button class="btn sm primary" data-action="viewCrew" data-v="' + esc(r.c.id) + '">' + esc(u('view')) + '</button>') + '</td></tr>';
+      h += '</tr>';
     });
-    h += '</table></div></div>';
-    h += '<div class="box" style="margin-top:.8rem"><h3>' + esc(u('crewManage')) + '</h3>';
+    h += '</table></div></details>';
+    h += '<div class="box" style="margin-top:.8rem"><h3>' + esc(u('crewManage')) + '</h3><p class="small muted">' + esc(u('crewRenameHint')) + '</p><div class="crew-list">';
     state.crew.forEach(function (c) {
-      h += '<div class="row" style="margin-bottom:.4rem"><input class="txt" type="text" maxlength="30" data-crew="' + esc(c.id) + '" value="' + esc(c.name) + '" aria-label="' + esc(u('crewName')) + '">' +
-        (state.crew.length > 1 ? '<button class="btn sm danger" data-action="delCrew" data-v="' + esc(c.id) + '">' + esc(u('remove')) + '</button>' : '') + '</div>';
+      h += '<div class="row"><input class="txt" type="text" maxlength="30" data-crew="' + esc(c.id) + '" value="' + esc(c.name) + '" aria-label="' + esc(u('crewName')) + '">' +
+        (state.crew.length > 1 ? '<button class="btn sm danger" data-action="delCrew" data-v="' + esc(c.id) + '" aria-label="' + esc(u('remove') + ': ' + c.name) + '">' + esc(u('remove')) + '</button>' : '') + '</div>';
     });
-    h += '<div class="row" style="margin-top:.6rem"><button class="btn primary" data-action="addCrew">' + esc(u('addCrew')) + '</button></div></div>';
+    h += '</div><form id="crewForm" class="row" style="margin-top:.8rem"><input class="txt" id="newCrew" type="text" maxlength="30" placeholder="' + esc(u('crewName')) + '" aria-label="' + esc(u('crewName')) + '">' +
+      '<button class="btn primary" type="submit">' + esc(u('addCrew')) + '</button></form></div>';
     $('main').innerHTML = h;
+  }
+  function addCrew(name) {
+    state.cseq += 1;
+    state.crew.push({ id: 'c' + state.cseq, name: name || (u('crewDefault') + ' ' + state.cseq) });
+    save(); render();
+    toast(u('crewAdded') + ': ' + state.crew[state.crew.length - 1].name);
   }
 
   /* ---------- render: emergencia ---------- */
@@ -758,7 +806,7 @@
       case 'csv': exportCsv(); break;
       case 'reset': if (window.confirm(u('resetConfirm'))) { var lang = state.lang; state = defaults(); state.lang = lang; lastResult = null; save(); render(); } break;
       case 'viewCrew': state.who = v; lastResult = null; go('dashboard'); break;
-      case 'addCrew': state.cseq += 1; state.crew.push({ id: 'c' + state.cseq, name: u('crewDefault') + ' ' + state.cseq }); save(); render(); break;
+      case 'crewMeasure': state.who = v; lastResult = null; go('measure'); break;
       case 'delCrew':
         if (state.crew.length > 1 && window.confirm(u('removeConfirm'))) {
           state.crew = state.crew.filter(function (c) { return c.id !== v; });
@@ -796,7 +844,10 @@
       save(); render();
     }
   });
-  document.addEventListener('submit', function (ev) { if (ev.target.id === 'mform') { submitMeasure(ev); } });
+  document.addEventListener('submit', function (ev) {
+    if (ev.target.id === 'mform') { submitMeasure(ev); }
+    else if (ev.target.id === 'crewForm') { ev.preventDefault(); addCrew($('newCrew').value.trim()); var n = $('newCrew'); if (n) { n.focus(); } }
+  });
   $('dlg').addEventListener('click', function (ev) { if (ev.target === $('dlg')) { closeDlg(); } });
   window.addEventListener('resize', syncTop);
 
