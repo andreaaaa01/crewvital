@@ -1,6 +1,8 @@
 /* CrewVital - contenido y umbrales (dominio publico, CC0).
-   Los umbrales son valores de referencia generales para adultos con fines de demostracion
-   y deben ser validados por un cirujano de vuelo. No es un dispositivo medico. */
+   Los umbrales son valores de referencia generales para adultos y deben ser validados
+   por un cirujano de vuelo. Cada indicador admite un campo opcional
+   src: { t: 'titulo', u: 'url' } con la fuente de sus umbrales; si falta, la app
+   muestra "fuente por confirmar". No es un dispositivo medico. */
 
 var HAZARDS = {
   radiation: { es: 'Radiación espacial', en: 'Space radiation' },
@@ -38,7 +40,7 @@ var ENVS = {
   transit: {
     name: { es: 'Nave en tránsito a Marte', en: 'Spacecraft in transit to Mars' },
     gravity: { es: 'Microgravedad', en: 'Microgravity' },
-    delay: { es: 'Crece con la distancia (hasta unos 20 min por trayecto)', en: 'Grows with distance (up to ~20 min one way)' },
+    delay: { es: 'Crece con la distancia (hasta unos 22 min por trayecto, 44 min ida y vuelta)', en: 'Grows with distance (up to ~22 min one way, 44 min round trip)' },
     evac: { es: 'Sin retorno inmediato: semanas a meses', en: 'No immediate return: weeks to months' },
     hazards: ['radiation', 'distance', 'isolation', 'gravity', 'closed'],
     escalate: { es: 'el cirujano de vuelo en Tierra', en: 'the ground flight surgeon' },
@@ -140,8 +142,8 @@ var IND = [
     id: 'bp', region: 'heart', when: 'am', hazards: ['gravity', 'radiation'], primary: 'sys',
     name: { es: 'Presión arterial', en: 'Blood pressure' },
     fields: [
-      { key: 'sys', label: { es: 'Sistólica (número mayor)', en: 'Systolic (top number)' }, unit: 'mmHg', min: 40, max: 260, step: 1, normalMin: 90, normalMax: 129, critMin: 80, critMax: 179, sim: [118, 7] },
-      { key: 'dia', label: { es: 'Diastólica (número menor)', en: 'Diastolic (bottom number)' }, unit: 'mmHg', min: 20, max: 160, step: 1, normalMin: 60, normalMax: 84, critMin: 50, critMax: 119, sim: [76, 5] }
+      { key: 'sys', label: { es: 'Sistólica (número mayor)', en: 'Systolic (top number)' }, unit: 'mmHg', min: 40, max: 260, step: 1, normalMin: 90, normalMax: 129, critMin: 80, critMax: 179 },
+      { key: 'dia', label: { es: 'Diastólica (número menor)', en: 'Diastolic (bottom number)' }, unit: 'mmHg', min: 20, max: 160, step: 1, normalMin: 60, normalMax: 84, critMin: 50, critMax: 119 }
     ],
     steps: {
       es: ['Siéntate o flota relajado durante 5 minutos, sin hablar.', 'Coloca el brazalete a la altura del corazón, sobre el brazo sin ropa.', 'Pulsa iniciar y no muevas el brazo hasta que termine.', 'Anota los dos números: el mayor (sistólica) y el menor (diastólica).'],
@@ -171,7 +173,7 @@ var IND = [
     id: 'hr', region: 'heart', when: 'am', hazards: ['gravity', 'closed'], primary: 'hr',
     name: { es: 'Frecuencia cardíaca', en: 'Heart rate' },
     fields: [
-      { key: 'hr', label: { es: 'Latidos por minuto', en: 'Beats per minute' }, unit: 'lpm', min: 20, max: 240, step: 1, normalMin: 50, normalMax: 100, critMin: 40, critMax: 120, sim: [68, 6] }
+      { key: 'hr', label: { es: 'Latidos por minuto', en: 'Beats per minute' }, unit: 'lpm', min: 20, max: 240, step: 1, normalMin: 50, normalMax: 100, critMin: 40, critMax: 120 }
     ],
     steps: {
       es: ['Descansa 5 minutos.', 'Coloca el sensor (reloj o banda) o busca el pulso en la muñeca.', 'Cuenta los latidos durante 30 segundos y multiplica por 2, o lee el valor del sensor.'],
@@ -201,7 +203,7 @@ var IND = [
     id: 'temp', region: 'body', when: 'am', hazards: ['closed', 'radiation'], primary: 'temp',
     name: { es: 'Temperatura corporal', en: 'Body temperature' },
     fields: [
-      { key: 'temp', label: { es: 'Temperatura', en: 'Temperature' }, unit: '°C', min: 30, max: 43, step: 0.1, normalMin: 36.1, normalMax: 37.5, critMin: 35.1, critMax: 38.4, sim: [36.7, 0.25] }
+      { key: 'temp', label: { es: 'Temperatura', en: 'Temperature' }, unit: '°C', min: 30, max: 43, step: 0.1, normalMin: 36.1, normalMax: 37.5, critMin: 35.1, critMax: 38.4 }
     ],
     steps: {
       es: ['Usa el termómetro de la nave (oral o de oído) limpio.', 'Mide en reposo, 15 minutos después de comer, beber o hacer ejercicio.', 'Espera el aviso del termómetro y anota el valor en °C.'],
@@ -231,7 +233,7 @@ var IND = [
     id: 'spo2', region: 'lungs', when: 'am', hazards: ['closed'], primary: 'spo2',
     name: { es: 'Oxígeno en sangre (SpO2)', en: 'Blood oxygen (SpO2)' },
     fields: [
-      { key: 'spo2', label: { es: 'Saturación de oxígeno', en: 'Oxygen saturation' }, unit: '%', min: 50, max: 100, step: 1, normalMin: 95, normalMax: 100, critMin: 91, critMax: 100, sim: [97.5, 1] }
+      { key: 'spo2', label: { es: 'Saturación de oxígeno', en: 'Oxygen saturation' }, unit: '%', min: 50, max: 100, step: 1, normalMin: 95, normalMax: 100, critMin: 91, critMax: 100 }
     ],
     steps: {
       es: ['Calienta la mano si está fría.', 'Coloca el oxímetro en la yema del dedo, sin esmalte de uñas.', 'Mantén la mano quieta unos segundos y lee el porcentaje.'],
@@ -261,11 +263,11 @@ var IND = [
     id: 'glucose', region: 'abdomen', when: 'am', hazards: ['closed', 'isolation'], primary: 'glucose',
     name: { es: 'Glucosa en sangre', en: 'Blood glucose' },
     fields: [
-      { key: 'glucose', label: { es: 'Glucosa', en: 'Glucose' }, unit: 'mg/dL', min: 20, max: 600, step: 1, normalMin: 70, normalMax: 110, critMin: 55, critMax: 199, sim: [90, 8] }
+      { key: 'glucose', label: { es: 'Glucosa', en: 'Glucose' }, unit: 'mg/dL', min: 20, max: 600, step: 1, normalMin: 70, normalMax: 110, critMin: 55, critMax: 199 }
     ],
     steps: {
-      es: ['Lávate y seca las manos.', 'Inserta una tira nueva en el glucómetro.', 'Pincha el lado del dedo y toca la tira con la gota.', 'Lee el valor en mg/dL. Puedes adjuntar una foto de la pantalla.'],
-      en: ['Wash and dry your hands.', 'Insert a new strip into the glucometer.', 'Prick the side of a finger and touch the strip to the drop.', 'Read the value in mg/dL. You can attach a photo of the screen.']
+      es: ['Mide en ayunas, antes del desayuno: el rango normal de la app es para ayunas.', 'Lávate y seca las manos.', 'Inserta una tira nueva en el glucómetro.', 'Pincha el lado del dedo y toca la tira con la gota.', 'Lee el valor en mg/dL. Puedes adjuntar una foto de la pantalla.'],
+      en: ['Measure fasting, before breakfast: the app\'s normal range is for fasting.', 'Wash and dry your hands.', 'Insert a new strip into the glucometer.', 'Prick the side of a finger and touch the strip to the drop.', 'Read the value in mg/dL. You can attach a photo of the screen.']
     },
     why: {
       es: 'Muestra cómo el cuerpo usa la energía. Valores muy altos o muy bajos pueden causar problemas graves.',
@@ -291,7 +293,7 @@ var IND = [
     id: 'sleep', region: 'head', when: 'am', hazards: ['isolation', 'closed'], primary: 'sleep',
     name: { es: 'Horas de sueño', en: 'Sleep hours' },
     fields: [
-      { key: 'sleep', label: { es: 'Horas dormidas anoche', en: 'Hours slept last night' }, unit: 'h', min: 0, max: 16, step: 0.1, normalMin: 7, normalMax: 11, critMin: 5, critMax: 16, sim: [7.4, 0.6] }
+      { key: 'sleep', label: { es: 'Horas dormidas anoche', en: 'Hours slept last night' }, unit: 'h', min: 0, max: 16, step: 0.1, normalMin: 7, normalMax: 11, critMin: 5, critMax: 16 }
     ],
     steps: {
       es: ['Registra las horas que dormiste esta noche.', 'Usa el sensor de sueño o una estimación honesta.', 'Anota si te despertaste muchas veces.'],
@@ -321,7 +323,7 @@ var IND = [
     id: 'mood', region: 'head', when: 'am', hazards: ['isolation'], primary: 'mood',
     name: { es: 'Estado de ánimo', en: 'Mood' },
     fields: [
-      { key: 'mood', label: { es: 'Cómo te sientes (1 a 5)', en: 'How you feel (1 to 5)' }, unit: '/5', min: 1, max: 5, step: 1, normalMin: 4, normalMax: 5, critMin: 3, critMax: 5, sim: [4, 0.7] }
+      { key: 'mood', label: { es: 'Cómo te sientes (1 a 5)', en: 'How you feel (1 to 5)' }, unit: '/5', min: 1, max: 5, step: 1, normalMin: 4, normalMax: 5, critMin: 3, critMax: 5 }
     ],
     steps: {
       es: ['Elige un número del 1 al 5 según cómo te sientes hoy.', '1 = muy mal, 3 = regular, 5 = muy bien.', 'Piensa en un motivo si puedes.'],
@@ -349,9 +351,11 @@ var IND = [
   },
   {
     id: 'radiation', region: 'body', when: 'pm', hazards: ['radiation'], primary: 'radiation',
+    cumulative: true,
+    src: { t: 'NASA-STD-3001 Vol. 1 Rev B', u: 'https://standards.nasa.gov/sites/default/files/standards/NASA/B/2022-01-05-NASA-STD-3001-Vol1-Rev-B-Final-Draft-Signature-010522.pdf' },
     name: { es: 'Dosis de radiación acumulada', en: 'Cumulative radiation dose' },
     fields: [
-      { key: 'radiation', label: { es: 'Dosis efectiva acumulada de carrera', en: 'Cumulative career effective dose' }, unit: 'mSv', min: 0, max: 1000, step: 0.1, normalMin: 0, normalMax: 299.9, critMin: -1, critMax: 479.9, sim: [150, 0] }
+      { key: 'radiation', label: { es: 'Dosis efectiva acumulada de carrera', en: 'Cumulative career effective dose' }, unit: 'mSv', min: 0, max: 1000, step: 0.1, normalMin: 0, normalMax: 299.9, critMin: -1, critMax: 479.9 }
     ],
     steps: {
       es: ['Lee el dosímetro personal (pantalla o registro).', 'Anota la dosis efectiva acumulada en mSv.', 'Revisa si hay alertas de tormenta solar.'],
@@ -381,7 +385,7 @@ var IND = [
     id: 'exercise', region: 'bones', when: 'pm', hazards: ['gravity'], primary: 'exercise',
     name: { es: 'Ejercicio del día', en: 'Exercise today' },
     fields: [
-      { key: 'exercise', label: { es: 'Minutos de ejercicio', en: 'Minutes of exercise' }, unit: 'min', min: 0, max: 400, step: 5, open: true, normalMin: 60, normalMax: 400, critMin: -1, critMax: 400, sim: [75, 12] }
+      { key: 'exercise', label: { es: 'Minutos de ejercicio', en: 'Minutes of exercise' }, unit: 'min', min: 0, max: 400, step: 5, open: true, normalMin: 60, normalMax: 400, critMin: -1, critMax: 400 }
     ],
     steps: {
       es: ['Suma los minutos de ejercicio de hoy (cinta, bicicleta, fuerza).', 'Incluye ejercicio de fuerza y de resistencia cardiovascular.', 'Anota el total.'],
@@ -400,15 +404,14 @@ var IND = [
       caution: {
         es: ['Haz una sesión corta hoy.', 'Prioriza ejercicio de fuerza.', 'Revisa nutrición y vitamina D con el cirujano de vuelo.'],
         en: ['Do a short session today.', 'Prioritize strength exercise.', 'Review nutrition and vitamin D with the flight surgeon.']
-      },
-      critical: { es: ['Haz ejercicio hoy y avisa al cirujano de vuelo.'], en: ['Exercise today and tell the flight surgeon.'] }
+      }
     }
   },
   {
     id: 'nutrition', region: 'abdomen', when: 'pm', hazards: ['closed', 'isolation'], primary: 'nutrition',
     name: { es: 'Ingesta nutricional', en: 'Nutritional intake' },
     fields: [
-      { key: 'nutrition', label: { es: '% de la ración planificada consumida', en: '% of planned ration eaten' }, unit: '%', min: 0, max: 150, step: 5, open: true, normalMin: 80, normalMax: 150, critMin: 60, critMax: 150, sim: [90, 8] }
+      { key: 'nutrition', label: { es: '% de la ración planificada consumida', en: '% of planned ration eaten' }, unit: '%', min: 0, max: 150, step: 5, open: true, normalMin: 80, normalMax: 150, critMin: 60, critMax: 150 }
     ],
     steps: {
       es: ['Compara lo que comiste hoy con la ración planificada.', 'Estima el porcentaje consumido (100% = ración completa).', 'Anota también si tomaste suficientes líquidos.'],
@@ -494,6 +497,14 @@ var EMERGENCY = {
     steps: {
       es: ['Confirma la alerta con control de misión o con los monitores de radiación.', 'Toda la tripulación va al refugio de radiación: la zona con más blindaje.', 'Permanece allí hasta que control de misión autorice salir.', 'Registra la dosis del dosímetro personal en la app.', 'Después, vigila náuseas, vómito, fatiga o enrojecimiento de la piel e informa a {S}.'],
       en: ['Confirm the alert with mission control or radiation monitors.', 'The whole crew goes to the radiation shelter: the best-shielded area.', 'Stay there until mission control clears you to leave.', 'Log the personal dosimeter dose in the app.', 'Afterward, watch for nausea, vomiting, fatigue, or skin redness and tell {S}.']
+    }
+  },
+  mental: {
+    title: { es: 'Crisis emocional o de conducta', en: 'Emotional or behavioral crisis' },
+    level: 2,
+    steps: {
+      es: ['No dejes solo al tripulante: un compañero se queda con él en todo momento.', 'Habla con calma, escucha sin juzgar y pregunta directamente cómo se siente.', 'Avisa de inmediato a {S} y al apoyo psicológico de la misión. {NOTE}', 'Suspende sus tareas críticas y redistribúyelas en la tripulación.', 'Aleja del área objetos o medicamentos con los que pueda hacerse daño.', 'Registra sueño y ánimo en la app y repite el registro cada día hasta nueva indicación.'],
+      en: ['Do not leave the crew member alone: a teammate stays with them at all times.', 'Speak calmly, listen without judging, and ask directly how they feel.', 'Tell {S} and mission psychological support immediately. {NOTE}', 'Suspend their critical tasks and share them among the crew.', 'Remove from the area any objects or medication they could use to harm themselves.', 'Log sleep and mood in the app and repeat daily until told otherwise.']
     }
   },
   fever: {
