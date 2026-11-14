@@ -207,6 +207,7 @@ select option { background: var(--solid); }
 .n-act .row { margin-top: .5rem; }
 .scn-src ul { margin: .3rem 0 0; padding-left: 1.2rem; }
 .scn-src a { color: var(--accent); }
+.evid-card { border: 1px solid var(--line); border-radius: 12px; padding: .75rem; margin: .6rem 0; background: rgba(10, 18, 36, .45); }
 @media (max-width: 1100px) { .flow { grid-template-columns: 1fr 1fr; } .flow .node:nth-child(2)::after, .flow .node:nth-child(2)::before { display: none; } }
 @media (max-width: 700px) {
   .flow { grid-template-columns: 1fr; gap: 1.6rem; }

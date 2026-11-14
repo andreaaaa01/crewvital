@@ -49,7 +49,9 @@
     emS4: { es: 'Avisa y registra', en: 'Report and log' },
     emS4d: { es: 'Mide los signos vitales y envía el resumen a control de misión.', en: 'Measure vital signs and send the summary to mission control.' },
     tab_emergency: { es: 'Modo emergencia', en: 'Emergency mode' },
-    tab_science: { es: 'Ciencia y fuentes', en: 'Science and sources' },
+    tab_science: { es: 'Ciencia NASA', en: 'NASA science' },
+    nasaTitle: { es: 'Base de datos y evidencia NASA (obligatoria del reto)', en: 'NASA database and evidence (required by the challenge)' },
+    nasaHint: { es: 'CrewVital no inventa efectos: se apoya en HRP, OSDR y CSA. Abre cada fuente para validar el modelo.', en: 'CrewVital does not invent effects: it relies on HRP, OSDR, and CSA. Open each source to validate the model.' },
     noData: { es: 'Sin datos todavía. Registra tu primera medición en la pestaña Medir.', en: 'No data yet. Log your first measurement in the Measure tab.' },
     allOk: { es: 'Todo en rango. Sigue con la rutina.', en: 'Everything is in range. Keep up the routine.' },
     someCaution: { es: 'Hay indicadores en precaución. Revisa las acciones recomendadas.', en: 'Some indicators are in caution. Review the recommended actions.' },
@@ -801,34 +803,19 @@
     closed: '<rect x="4" y="3" width="16" height="18" rx="8" fill="none"/><path d="M8 10h8M8 14h8" fill="none"/>',
     distance: '<circle cx="5" cy="17" r="3"/><circle cx="19" cy="6" r="2"/><path d="M7.5 15 17 7.5" fill="none" stroke-dasharray="2 2"/>'
   };
-  var SCN = [
-    { id: 'solar', hz: 'radiation', em: 'radiation', regions: ['body', 'head'], src: [0, 3, 5, 6],
-      title: { es: 'Tormenta solar', en: 'Solar storm' },
-      event: { es: 'El Sol lanza una ráfaga de partículas. La dosis de radiación puede subir en pocas horas.', en: 'The Sun releases a burst of particles. Radiation dose can rise within a few hours.' },
-      demo: { radiation: { radiation: 320 }, temp: { temp: 37.2 } },
-      act: { es: ['Ir de inmediato al refugio con más blindaje.', 'Anotar la dosis de radiación cada hora.', 'Avisar a control de misión y esperar su permiso para salir.'], en: ['Go straight to the best-shielded shelter.', 'Log the radiation dose every hour.', 'Tell mission control and wait for clearance to leave.'] } },
-    { id: 'fluids', hz: 'gravity', em: 'chest', regions: ['heart', 'bones'], src: [0, 1, 5, 6],
-      title: { es: 'Microgravedad: los líquidos suben', en: 'Microgravity: fluids shift up' },
-      event: { es: 'Sin gravedad, la sangre y los líquidos se van hacia la cabeza. El corazón y los huesos trabajan menos y se debilitan.', en: 'Without gravity, blood and fluids move toward the head. Heart and bones work less and weaken.' },
-      demo: { bp: { sys: 138, dia: 88 }, hr: { hr: 108 }, exercise: { exercise: 30 } },
-      act: { es: ['Medir presión y pulso en reposo, sentado.', 'Cumplir el ejercicio diario (cinta, bici, pesas).', 'Si hay dolor de pecho, desmayo o mareo fuerte: Emergencia.'], en: ['Measure blood pressure and pulse at rest, seated.', 'Do the daily exercise (treadmill, bike, weights).', 'If there is chest pain, fainting or strong dizziness: Emergency.'] } },
-    { id: 'isolation', hz: 'isolation', em: 'mental', regions: ['head'], src: [0, 1, 2, 6],
-      title: { es: 'Aislamiento prolongado', en: 'Long isolation' },
-      event: { es: 'Meses en un espacio pequeño, lejos de la familia y con poca luz natural alteran el sueño y el ánimo.', en: 'Months in a small space, far from family and with little daylight, disrupt sleep and mood.' },
-      demo: { sleep: { sleep: 5.5 }, mood: { mood: 3 } },
-      act: { es: ['Mantener horarios fijos de sueño y luz.', 'Hablar con un compañero o con apoyo psicológico.', 'Si hay una crisis: no dejar solo al tripulante (Emergencia).'], en: ['Keep fixed sleep and light schedules.', 'Talk with a teammate or psychological support.', 'In a crisis: never leave the crew member alone (Emergency).'] } },
-    { id: 'cabin', hz: 'closed', em: 'fever', regions: ['lungs', 'body'], src: [0, 1, 5, 6],
-      title: { es: 'Aire de cabina e infección', en: 'Cabin air and infection' },
-      event: { es: 'En una cabina cerrada, un fallo del aire o un virus afecta rápido a toda la tripulación.', en: 'In a closed cabin, an air failure or a virus quickly affects the whole crew.' },
-      demo: { spo2: { spo2: 93 }, temp: { temp: 38.6 }, hr: { hr: 104 } },
-      act: { es: ['Medir oxígeno en sangre y temperatura a todos.', 'Separar a quien tenga síntomas y usar mascarilla.', 'Revisar el sistema de aire y avisar a control de misión.'], en: ['Measure blood oxygen and temperature for everyone.', 'Separate anyone with symptoms and use masks.', 'Check the air system and tell mission control.'] } }
-  ];
-  function scnById(id) { for (var i = 0; i < SCN.length; i++) if (SCN[i].id === id) return SCN[i]; return SCN[0]; }
-  function hzIcon(h) { return '<svg class="hz-ic" viewBox="0 0 24 24" aria-hidden="true">' + HZ_ICON[h] + '</svg>'; }
+  function evidenceById(id) {
+    for (var i = 0; i < NASA_EVIDENCE.length; i++) if (NASA_EVIDENCE[i].id === id) return NASA_EVIDENCE[i];
+    return null;
+  }
+  function scnById(id) {
+    for (var i = 0; i < SCENARIOS.length; i++) if (SCENARIOS[i].id === id) return SCENARIOS[i];
+    return SCENARIOS[0];
+  }
+  function hzIcon(h) { return '<svg class="hz-ic" viewBox="0 0 24 24" aria-hidden="true">' + (HZ_ICON[h] || '') + '</svg>'; }
   function renderScenarios() {
     var sc = scnById(state.scn);
     var h = '<h2>' + esc(u('tab_scenarios')) + '</h2><p class="muted">' + esc(u('scnIntro')) + '</p><div class="scn-pick">';
-    SCN.forEach(function (x) {
+    SCENARIOS.forEach(function (x) {
       h += '<button data-action="scn" data-v="' + x.id + '" aria-pressed="' + (x.id === sc.id) + '">' + hzIcon(x.hz) + '<span>' + esc(T(x.title)) + '</span></button>';
     });
     h += '</div><ol class="flow" aria-label="' + esc(u('scnFlow')) + '">';
@@ -841,13 +828,19 @@
     }).join('') + '</div></li>';
     h += '<li class="node n-ind"><span class="step">3 · ' + esc(u('scnInd')) + '</span>' + Object.keys(sc.demo).map(function (id) {
       var ind = byId(id), l = latest(id), s = l ? l.state : -1;
-      return '<button class="ind-row s' + s + '" data-action="open" data-v="' + id + '"><b>' + esc(T(ind.name)) + '</b><span>' + (l ? esc(valueText(l)) : '—') + '</span>' + badge(s) + '</button>';
+      return '<button class="ind-row s' + s + '" data-action="open" data-v="' + id + '"><b>' + esc(T(ind.name)) + '</b><span>' + (l ? esc(valueText(l)) : '-') + '</span>' + badge(s) + '</button>';
     }).join('') + '<p class="small muted">' + esc(u('scnIndHint')) + '</p></li>';
     h += '<li class="node n-act"><span class="step">4 · ' + esc(u('scnAct')) + '</span><ol class="steps">' + T(sc.act).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol>' +
       '<div class="row"><button class="btn primary" data-action="scnDemo" data-v="' + sc.id + '">' + esc(u('scnDemo')) + '</button>' +
       '<button class="btn danger" data-action="scnEm" data-v="' + sc.em + '">' + esc(u('scnGoEm')) + ': ' + esc(T(EMERGENCY[sc.em].title)) + '</button></div>' +
       '<p class="small muted">' + esc(u('scnDemoHint')) + '</p></li></ol>';
-    h += '<div class="box scn-src"><h3>' + esc(u('scnSources')) + '</h3><ul class="small">' + sc.src.map(function (i) { return '<li><a href="' + esc(SOURCES[i].u) + '" target="_blank" rel="noopener">' + esc(SOURCES[i].t) + '</a></li>'; }).join('') + '</ul></div>';
+    h += '<div class="box scn-src"><h3>' + esc(u('scnSources')) + '</h3><ul class="small">';
+    (sc.evidence || []).forEach(function (eid) {
+      var ev = evidenceById(eid);
+      if (!ev) return;
+      h += '<li><span class="chip on">' + esc(ev.kind) + '</span> <a href="' + esc(ev.u) + '" target="_blank" rel="noopener">' + esc(T(ev.title)) + '</a><br><span class="muted">' + esc(T(ev.finding)) + '</span></li>';
+    });
+    h += '</ul></div>';
     $('main').innerHTML = h;
   }
   function loadDemo(sc) {
@@ -887,7 +880,15 @@
 
   /* ---------- render: ciencia ---------- */
   function renderScience() {
-    var h = '<div class="box"><h2>' + esc(u('hazTitle')) + '</h2><div class="scroll"><table><tr><th>' + esc(u('hazards')) + '</th><th>' + esc(u('risk')) + '</th><th>' + esc(u('indicators')) + '</th></tr>';
+    var h = '<div class="box"><h2>' + esc(u('nasaTitle') || 'NASA HRP + OSDR') + '</h2><p class="muted">' + esc(u('nasaHint') || '') + '</p>';
+    NASA_EVIDENCE.forEach(function (ev) {
+      h += '<div class="evid-card"><div class="row" style="justify-content:space-between;gap:.5rem"><b>' + esc(T(ev.title)) + '</b><span class="chip on">' + esc(ev.kind) + '</span></div>' +
+        '<p class="small">' + esc(T(ev.finding)) + '</p>' +
+        '<div class="chips">' + ev.hazards.map(function (hz) { return '<span class="chip">' + esc(T(HAZARDS[hz])) + '</span>'; }).join('') + '</div>' +
+        '<a class="btn sm" href="' + esc(ev.u) + '" target="_blank" rel="noopener">' + esc(ev.kind) + ' · ' + esc(u('src')) + '</a></div>';
+    });
+    h += '</div>';
+    h += '<div class="box" style="margin-top:.8rem"><h2>' + esc(u('hazTitle')) + '</h2><div class="scroll"><table><tr><th>' + esc(u('hazards')) + '</th><th>' + esc(u('risk')) + '</th><th>' + esc(u('indicators')) + '</th></tr>';
     Object.keys(HAZARDS).forEach(function (hz) {
       var inds = IND.filter(function (i) { return i.hazards.indexOf(hz) >= 0; }).map(function (i) { return T(i.name); }).join(', ');
       h += '<tr><td><b>' + esc(T(HAZARDS[hz])) + '</b></td><td>' + esc(T(HAZARD_INFO[hz])) + '</td><td>' + esc(inds) + '</td></tr>';

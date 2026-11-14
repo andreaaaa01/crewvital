@@ -439,6 +439,62 @@ var IND = [
   }
 ];
 
+/* Evidencia NASA obligatoria del reto: HRP + OSDR (+ CSA). */
+var NASA_EVIDENCE = [
+  { id: 'hrp-hazards', kind: 'HRP', title: { es: '5 peligros del vuelo espacial humano', en: '5 hazards of human spaceflight' },
+    finding: { es: 'La NASA HRP agrupa los riesgos en radiación, aislamiento, distancia a la Tierra, gravedad y entornos cerrados/hostiles. Esos peligros se alimentan entre sí.', en: 'NASA HRP groups risks into radiation, isolation, distance from Earth, gravity, and closed/hostile environments. Those hazards feed into each other.' },
+    hazards: ['radiation', 'isolation', 'distance', 'gravity', 'closed'], inds: ['radiation', 'mood', 'sleep', 'bp', 'hr', 'exercise', 'spo2', 'temp'],
+    u: 'https://www.nasa.gov/hrp/hazards/' },
+  { id: 'hrp-risks', kind: 'HRP', title: { es: 'Riesgos de salud y desempeño humano', en: 'Human health and performance risks' },
+    finding: { es: 'El catálogo de riesgos del HRP conecta cada peligro con efectos medibles en cuerpo y conducta: base para decidir qué vigilar a bordo.', en: 'The HRP risk catalog links each hazard to measurable body and behavior effects: the basis for choosing what to monitor onboard.' },
+    hazards: ['radiation', 'isolation', 'distance', 'gravity', 'closed'], inds: ['bp', 'hr', 'mood', 'sleep', 'exercise', 'radiation'],
+    u: 'https://www.nasa.gov/hrp/risks/' },
+  { id: 'hrp-research', kind: 'HRP', title: { es: 'Investigación en curso del HRP', en: 'Ongoing HRP research' },
+    finding: { es: 'Estudios activos en órbita, análogos en Tierra y laboratorio para mitigar los 5 peligros antes de misiones largas.', en: 'Active studies in orbit, Earth analogs, and labs to mitigate the 5 hazards before long missions.' },
+    hazards: ['radiation', 'isolation', 'gravity', 'closed', 'distance'], inds: ['radiation', 'exercise', 'mood', 'sleep'],
+    u: 'https://www.nasa.gov/hrp/ongoing-hrp-research/' },
+  { id: 'osdr-portal', kind: 'OSDR', title: { es: 'NASA Open Science Data Repository', en: 'NASA Open Science Data Repository' },
+    finding: { es: 'Repositorio abierto de datos biológicos de vuelos espaciales. CrewVital ancla escenarios a evidencia pública, no a efectos inventados.', en: 'Open repository of biological spaceflight data. CrewVital anchors scenarios in public evidence, not invented effects.' },
+    hazards: ['radiation', 'gravity', 'closed', 'isolation'], inds: ['radiation', 'exercise', 'spo2', 'bp'],
+    u: 'https://osdr.nasa.gov/bio/' },
+  { id: 'osdr-i4', kind: 'OSDR', title: { es: 'Inspiration4 · sangre (OSD-569 a 575)', en: 'Inspiration4 · blood (OSD-569 to 575)' },
+    finding: { es: 'OSDR publica datos de astronautas comerciales (sangre, plasma, suero) antes, durante y después del vuelo.', en: 'OSDR publishes commercial astronaut data (blood, plasma, serum) before, during, and after flight.' },
+    hazards: ['closed', 'radiation', 'isolation'], inds: ['temp', 'glucose', 'mood'],
+    u: 'https://www.nasa.gov/osdr-latest-news-i4-mission-datasets/' },
+  { id: 'csa-radiation', kind: 'CSA', title: { es: 'CSA · monitoreo de radiación y salud', en: 'CSA · radiation monitoring and health' },
+    finding: { es: 'La Agencia Espacial Canadiense explica por qué vigilar la radiación a bordo es clave para la tripulación.', en: 'The Canadian Space Agency explains why onboard radiation monitoring is key for the crew.' },
+    hazards: ['radiation'], inds: ['radiation'],
+    u: 'https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp' },
+  { id: 'csa-science', kind: 'CSA', title: { es: 'CSA · por qué se hace ciencia en el espacio', en: 'CSA · why science is done in space' },
+    finding: { es: 'La microgravedad revela cómo reaccionan cuerpo y sistemas sin peso: base para medir y comparar.', en: 'Microgravity reveals how body and systems react without weight: a basis for measuring and comparing.' },
+    hazards: ['gravity', 'closed'], inds: ['exercise', 'bp', 'hr'],
+    u: 'https://www.asc-csa.gc.ca/eng/iss/science/why-do-we-conduct-science-experiments-in-space.asp' }
+];
+
+/* Escenarios visuales (cascada). Formato usado por la UI: hz, regions, demo, act, evidence. */
+var SCENARIOS = [
+  { id: 'solar', hz: 'radiation', em: 'radiation', regions: ['body', 'head'], evidence: ['hrp-hazards', 'hrp-risks', 'csa-radiation', 'osdr-portal'],
+    title: { es: 'Tormenta solar', en: 'Solar storm' },
+    event: { es: 'El Sol lanza una ráfaga de partículas (peligro HRP: radiación). La dosis puede subir en pocas horas y afectar sueño y ánimo.', en: 'The Sun releases a burst of particles (HRP hazard: radiation). Dose can rise within hours and affect sleep and mood.' },
+    demo: { radiation: { radiation: 320 }, sleep: { sleep: 5.5 }, mood: { mood: 2 } },
+    act: { es: ['Ir de inmediato al refugio con más blindaje.', 'Registrar la dosis de radiación en Medir.', 'Avisar a control de misión y esperar permiso para salir.', 'Si hay náuseas o confusión: Si algo va mal.'], en: ['Go straight to the best-shielded shelter.', 'Log the radiation dose in Measure.', 'Tell mission control and wait for clearance to leave.', 'If nausea or confusion appears: If something goes wrong.'] } },
+  { id: 'fluids', hz: 'gravity', em: 'chest', regions: ['heart', 'bones'], evidence: ['hrp-hazards', 'hrp-risks', 'csa-science', 'osdr-portal'],
+    title: { es: 'Microgravedad: los líquidos suben', en: 'Microgravity: fluids shift up' },
+    event: { es: 'Sin gravedad (peligro HRP: campos de gravedad), la sangre sube a la cabeza. El corazón y los huesos se debilitan si falta ejercicio.', en: 'Without gravity (HRP hazard: gravity fields), blood moves toward the head. Heart and bones weaken without exercise.' },
+    demo: { bp: { sys: 138, dia: 88 }, hr: { hr: 108 }, exercise: { exercise: 30 } },
+    act: { es: ['Medir presión y pulso en reposo.', 'Cumplir el ejercicio diario (≥ 60 min).', 'Si hay dolor de pecho, desmayo o mareo fuerte: Si algo va mal.'], en: ['Measure blood pressure and pulse at rest.', 'Complete daily exercise (≥ 60 min).', 'If chest pain, fainting, or strong dizziness: If something goes wrong.'] } },
+  { id: 'isolation', hz: 'isolation', em: 'mental', regions: ['head'], evidence: ['hrp-hazards', 'hrp-research', 'osdr-i4', 'csa-science'],
+    title: { es: 'Aislamiento prolongado', en: 'Long isolation' },
+    event: { es: 'Meses en un espacio pequeño (peligro HRP: aislamiento) alteran sueño, ánimo, nutrición y adherencia al ejercicio.', en: 'Months in a small space (HRP hazard: isolation) disrupt sleep, mood, nutrition, and exercise adherence.' },
+    demo: { sleep: { sleep: 5.5 }, mood: { mood: 2 }, nutrition: { nutrition: 55 }, exercise: { exercise: 15 } },
+    act: { es: ['Mantener horarios fijos de sueño y luz.', 'Check-in diario con un compañero.', 'Recuperar comida + 30 min de ejercicio.', 'Si hay crisis emocional: Si algo va mal.'], en: ['Keep fixed sleep and light schedules.', 'Daily check-in with a teammate.', 'Restore meals + 30 min exercise.', 'If emotional crisis: If something goes wrong.'] } },
+  { id: 'cabin', hz: 'closed', em: 'fever', regions: ['lungs', 'body'], evidence: ['hrp-hazards', 'hrp-risks', 'osdr-i4', 'osdr-portal'],
+    title: { es: 'Aire de cabina e infección', en: 'Cabin air and infection' },
+    event: { es: 'En una cabina cerrada (peligro HRP: entorno hostil), un fallo del aire o un virus afecta rápido a toda la tripulación.', en: 'In a closed cabin (HRP hazard: hostile environment), an air failure or virus quickly affects the whole crew.' },
+    demo: { spo2: { spo2: 93 }, temp: { temp: 38.6 }, hr: { hr: 104 } },
+    act: { es: ['Medir oxígeno en sangre y temperatura.', 'Separar a quien tenga síntomas y usar mascarilla.', 'Revisar el sistema de aire y avisar a control de misión.'], en: ['Measure blood oxygen and temperature.', 'Separate anyone with symptoms and use masks.', 'Check the air system and tell mission control.'] } }
+];
+
 /* Protocolos de emergencia (educativos). {S} = quien recibe la escalacion. */
 var EMERGENCY = {
   chest: {
@@ -521,8 +577,9 @@ var SOURCES = [
   { t: 'NASA HRP - 5 Hazards of Human Spaceflight', u: 'https://www.nasa.gov/hrp/hazards/' },
   { t: 'NASA HRP - Human Health and Performance Risks', u: 'https://www.nasa.gov/hrp/risks/' },
   { t: 'NASA HRP - Ongoing Research', u: 'https://www.nasa.gov/hrp/ongoing-hrp-research/' },
+  { t: 'NASA Open Science Data Repository (OSDR)', u: 'https://osdr.nasa.gov/bio/' },
+  { t: 'NASA OSDR - Inspiration4 mission datasets (OSD-569 to OSD-575+)', u: 'https://www.nasa.gov/osdr-latest-news-i4-mission-datasets/' },
   { t: 'Canadian Space Agency - Monitoring radiation for astronaut health (2026)', u: 'https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp' },
   { t: 'Canadian Space Agency - Why do we conduct science experiments in space?', u: 'https://www.asc-csa.gc.ca/eng/iss/science/why-do-we-conduct-science-experiments-in-space.asp' },
-  { t: 'NASA-STD-3001 Vol. 1 Rev B (Crew Health): career limit 600 mSv', u: 'https://standards.nasa.gov/sites/default/files/standards/NASA/B/2022-01-05-NASA-STD-3001-Vol1-Rev-B-Final-Draft-Signature-010522.pdf' },
-  { t: 'NASA Open Science Data Repository (OSDR)', u: 'https://osdr.nasa.gov/bio/' }
+  { t: 'NASA-STD-3001 Vol. 1 Rev B (Crew Health): career limit 600 mSv', u: 'https://standards.nasa.gov/sites/default/files/standards/NASA/B/2022-01-05-NASA-STD-3001-Vol1-Rev-B-Final-Draft-Signature-010522.pdf' }
 ];
