@@ -705,8 +705,8 @@
   function addCrew(name) {
     state.cseq += 1;
     state.crew.push({ id: 'c' + state.cseq, name: name || (u('crewDefault') + ' ' + state.cseq) });
-    save(); render();
-    toast(u('crewAdded') + ': ' + state.crew[state.crew.length - 1].name);
+    var ok = save(); render();
+    if (ok) { toast(u('crewAdded') + ': ' + state.crew[state.crew.length - 1].name); }
   }
 
   /* ---------- render: emergencia ---------- */
