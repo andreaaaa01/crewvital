@@ -4,7 +4,7 @@
   'use strict';
 
   var KEY = 'crewvital.v2';
-  var TABS = ['dashboard', 'body', 'measure', 'routine', 'crew', 'emergency', 'science'];
+  var TABS = ['dashboard', 'body', 'scenarios', 'measure', 'routine', 'crew', 'emergency', 'science'];
   var BASE_MIN = 7; /* dias previos necesarios para activar la linea base personal */
 
   var UI = {
@@ -18,6 +18,36 @@
     tab_measure: { es: 'Medir', en: 'Measure' },
     tab_routine: { es: 'Rutina y logros', en: 'Routine and rewards' },
     tab_crew: { es: 'Tripulación', en: 'Crew' },
+    tab_scenarios: { es: 'Escenarios', en: 'Scenarios' },
+    scnIntro: { es: 'Qué pasa en el cuerpo ante un evento del espacio y qué hacer, en 4 pasos. Elige un escenario.', en: 'What happens to the body during a space event and what to do, in 4 steps. Pick a scenario.' },
+    scnFlow: { es: 'Cascada: evento, cuerpo, indicadores, acción', en: 'Cascade: event, body, indicators, action' },
+    scnEvent: { es: 'Evento', en: 'Event' },
+    scnBody: { es: 'Parte del cuerpo afectada', en: 'Body part affected' },
+    scnInd: { es: 'Indicadores a vigilar', en: 'Indicators to watch' },
+    scnIndHint: { es: 'Valores del tripulante activo. Toca uno para ver su historial.', en: 'Values of the active crew member. Tap one to see its history.' },
+    scnAct: { es: 'Qué hacer', en: 'What to do' },
+    scnLong: { es: 'Riesgo a largo plazo', en: 'Long-term risk' },
+    scnDemo: { es: 'Cargar demo', en: 'Load demo' },
+    scnDemoHint: { es: 'La demo guarda valores de ejemplo para el tripulante activo, para ver cómo cambian los colores.', en: 'The demo saves example values for the active crew member, so you can see the colors change.' },
+    scnGoEm: { es: 'Ir a emergencia', en: 'Go to emergency' },
+    scnSources: { es: 'Evidencia (NASA HRP / OSDR)', en: 'Evidence (NASA HRP / OSDR)' },
+    demoLoaded: { es: 'Demo cargada', en: 'Demo loaded' },
+    guideTitle: { es: 'Guía rápida: cómo leer este panel', en: 'Quick guide: how to read this panel' },
+    guide1: { es: 'Cada tarjeta es una medición del cuerpo. Tócala para ver su historial y qué hacer.', en: 'Each card is a body measurement. Tap it to see its history and what to do.' },
+    guide2: { es: 'Verde: todo bien. Amarillo: vigila y repite la medición. Rojo: actúa ya y avisa.', en: 'Green: all good. Yellow: watch it and measure again. Red: act now and tell someone.' },
+    guide3: { es: 'Mide cada mañana en Medir. La app compara con tus valores de siempre.', en: 'Measure every morning in Measure. The app compares with your usual values.' },
+    guide4: { es: 'Si alguien se siente mal de repente, pulsa EMERGENCIA (arriba a la derecha).', en: 'If someone suddenly feels unwell, press EMERGENCY (top right).' },
+    guideHide: { es: 'Ocultar guía', en: 'Hide guide' },
+    guideShow: { es: 'Mostrar guía rápida', en: 'Show quick guide' },
+    emTitle: { es: 'Si algo va mal: guía paso a paso', en: 'If something goes wrong: step by step' },
+    emS1: { es: 'Calma y seguridad', en: 'Stay calm, stay safe' },
+    emS1d: { es: 'Respira. Comprueba que no haya peligro para ti (humo, fuego, electricidad).', en: 'Breathe. Make sure there is no danger to you (smoke, fire, electricity).' },
+    emS2: { es: 'Elige qué pasa', en: 'Pick what is happening' },
+    emS2d: { es: 'Toca la situación que más se parece.', en: 'Tap the situation that fits best.' },
+    emS3: { es: 'Responde y actúa', en: 'Answer and act' },
+    emS3d: { es: 'Contesta sí o no. La app te dice qué hacer, en orden.', en: 'Answer yes or no. The app tells you what to do, in order.' },
+    emS4: { es: 'Avisa y registra', en: 'Report and log' },
+    emS4d: { es: 'Mide los signos vitales y envía el resumen a control de misión.', en: 'Measure vital signs and send the summary to mission control.' },
     tab_emergency: { es: 'Modo emergencia', en: 'Emergency mode' },
     tab_science: { es: 'Ciencia y fuentes', en: 'Science and sources' },
     noData: { es: 'Sin datos todavía. Registra tu primera medición en la pestaña Medir.', en: 'No data yet. Log your first measurement in the Measure tab.' },
@@ -115,6 +145,9 @@
     crewMatrix: { es: 'Ver todos los indicadores (tabla)', en: 'See all indicators (table)' },
     crewRenameHint: { es: 'Edita un nombre y sal del campo para guardarlo.', en: 'Edit a name and leave the field to save it.' },
     crewAdded: { es: 'Tripulante agregado', en: 'Crew member added' },
+    motionOn: { es: 'Fondo: estrellas en movimiento (pausar)', en: 'Background: moving stars (pause)' },
+    motionOff: { es: 'Fondo: estrellas en pausa (animar)', en: 'Background: stars paused (animate)' },
+    motionReduced: { es: 'Fondo estático (tu sistema pide reducir movimiento)', en: 'Static background (your system asks to reduce motion)' },
     ago: { es: 'hace', en: 'ago' },
     now: { es: 'ahora', en: 'just now' },
     emIntro: { es: 'Elige la situación. Los pasos se adaptan al entorno de misión seleccionado.', en: 'Choose the situation. Steps adapt to the selected mission environment.' },
@@ -167,7 +200,7 @@
   /* ---------- estado ---------- */
   function defaults() {
     return { lang: 'es', env: 'transit', missionStart: isoDate(new Date()), entries: [], seq: 0, tab: 'dashboard', sel: 'bp', region: null,
-      crew: [{ id: 'c1', name: 'Tripulante 1' }], cseq: 1, who: 'c1', em: { sc: null, node: null } };
+      crew: [{ id: 'c1', name: 'Tripulante 1' }], cseq: 1, who: 'c1', em: { sc: null, node: null }, motion: true, guide: true, scn: 'solar' };
   }
   var state = load();
   var pendingImg = null;
@@ -189,6 +222,9 @@
     if (TABS.indexOf(s.tab) >= 0) d.tab = s.tab;
     if (byId(s.sel)) d.sel = s.sel;
     if (typeof s.region === 'string' && REGIONS.hasOwnProperty(s.region)) d.region = s.region;
+    if (typeof s.motion === 'boolean') d.motion = s.motion;
+    if (typeof s.guide === 'boolean') d.guide = s.guide;
+    if (typeof s.scn === 'string') d.scn = s.scn;
     if (/^\d{4}-\d{2}-\d{2}$/.test(s.missionStart || '')) d.missionStart = s.missionStart;
     if (Array.isArray(s.crew)) {
       var crew = s.crew.filter(function (c) { return c && typeof c.id === 'string' && typeof c.name === 'string' && c.name; });
@@ -402,7 +438,10 @@
     }).join('');
     $('main').setAttribute('aria-labelledby', 'tab_' + state.tab);
   }
-  function renderFooter() { $('foot').innerHTML = '<p>' + esc(u('notProd')) + '</p>'; }
+  function renderFooter() {
+    var red = typeof sky !== 'undefined' && sky.reduced && sky.reduced();
+    $('foot').innerHTML = '<p>' + esc(u('notProd')) + '</p><p class="row"><button class="btn sm" data-action="motion" aria-pressed="' + (!red && state.motion !== false) + '"' + (red ? ' disabled' : '') + '>' + esc(u(red ? 'motionReduced' : (state.motion !== false ? 'motionOn' : 'motionOff'))) + '</button></p>';
+  }
 
   /* ---------- render: panel ---------- */
   function envContext() {
@@ -416,6 +455,10 @@
     var w = overall();
     var msg = w < 0 ? u('noData') : (w === 0 ? u('allOk') : (w === 1 ? u('someCaution') : u('someCritical')));
     var html = '<div class="banner ' + (w < 0 ? '' : 's' + w) + '">' + (w < 0 ? '' : badge(w)) + '<b>' + esc(crewName(state.who)) + ': ' + esc(msg) + '</b></div>';
+    html += state.guide !== false ?
+      '<section class="guide" aria-labelledby="gT"><div class="row"><h3 id="gT">' + esc(u('guideTitle')) + '</h3><button class="btn sm" data-action="guide">' + esc(u('guideHide')) + '</button></div><ol>' +
+      [1, 2, 3, 4].map(function (i) { return '<li' + (i === 2 ? ' class="g-colors"' : '') + '>' + (i === 2 ? '<span class="tl"><i class="c0"></i><i class="c1"></i><i class="c2"></i></span>' : '') + esc(u('guide' + i)) + '</li>'; }).join('') + '</ol></section>' :
+      '<p><button class="btn sm" data-action="guide">' + esc(u('guideShow')) + '</button></p>';
     var alerts = trendAlerts();
     if (alerts.length) {
       html += '<h3>' + esc(u('trendAlerts')) + '</h3>' + alerts.map(function (i) { return '<div class="alert"><b>' + esc(T(i.name)) + '</b> ' + esc(u('trendText')) + '</div>'; }).join('');
@@ -489,20 +532,45 @@
     return '<ul class="list">' + list.map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('') + '</ul><p><b>' + esc(u('contact')) + ':</b> ' + esc(fill(contact)) + (s === 2 ? ' ' + esc(T(ENVS[state.env].note)) : '') + '</p>';
   }
 
-  /* ---------- render: cuerpo ---------- */
+  /* ---------- render: cuerpo (figura anatomica) ---------- */
+  var SIL_PATH = 'M150.0 96.0C154.3 96.0 160.3 94.3 163.0 98.0C165.7 101.7 162.8 113.0 166.0 118.0C169.2 123.0 175.3 125.3 182.0 128.0C188.7 130.7 198.7 131.0 206.0 134.0C213.3 137.0 221.3 140.0 226.0 146.0C230.7 152.0 232.0 160.0 234.0 170.0C236.0 180.0 236.7 192.7 238.0 206.0C239.3 219.3 240.3 234.3 242.0 250.0C243.7 265.7 246.0 284.0 248.0 300.0C250.0 316.0 252.0 333.7 254.0 346.0C256.0 358.3 258.7 366.3 260.0 374.0C261.3 381.7 263.0 387.0 262.0 392.0C261.0 397.0 257.0 402.7 254.0 404.0C251.0 405.3 246.3 403.7 244.0 400.0C241.7 396.3 241.0 389.3 240.0 382.0C239.0 374.7 239.7 368.7 238.0 356.0C236.3 343.3 232.7 321.7 230.0 306.0C227.3 290.3 224.7 276.0 222.0 262.0C219.3 248.0 216.7 233.0 214.0 222.0C211.3 211.0 208.3 194.3 206.0 196.0C203.7 197.7 202.0 217.7 200.0 232.0C198.0 246.3 193.7 267.0 194.0 282.0C194.3 297.0 200.0 309.0 202.0 322.0C204.0 335.0 205.7 345.3 206.0 360.0C206.3 374.7 205.7 393.0 204.0 410.0C202.3 427.0 197.0 447.0 196.0 462.0C195.0 477.0 198.3 485.7 198.0 500.0C197.7 514.3 196.0 533.0 194.0 548.0C192.0 563.0 186.0 580.0 186.0 590.0C186.0 600.0 192.0 603.0 194.0 608.0C196.0 613.0 200.0 617.0 198.0 620.0C196.0 623.0 187.3 625.7 182.0 626.0C176.7 626.3 169.0 626.7 166.0 622.0C163.0 617.3 164.3 610.0 164.0 598.0C163.7 586.0 164.3 566.3 164.0 550.0C163.7 533.7 162.7 514.7 162.0 500.0C161.3 485.3 160.7 477.0 160.0 462.0C159.3 447.0 159.0 425.3 158.0 410.0C157.0 394.7 155.3 379.0 154.0 370.0C152.7 361.0 151.3 356.0 150.0 356.0C148.7 356.0 147.3 361.0 146.0 370.0C144.7 379.0 143.0 394.7 142.0 410.0C141.0 425.3 140.7 447.0 140.0 462.0C139.3 477.0 138.7 485.3 138.0 500.0C137.3 514.7 136.3 533.7 136.0 550.0C135.7 566.3 136.3 586.0 136.0 598.0C135.7 610.0 137.0 617.3 134.0 622.0C131.0 626.7 123.3 626.3 118.0 626.0C112.7 625.7 104.0 623.0 102.0 620.0C100.0 617.0 104.0 613.0 106.0 608.0C108.0 603.0 114.0 600.0 114.0 590.0C114.0 580.0 108.0 563.0 106.0 548.0C104.0 533.0 102.3 514.3 102.0 500.0C101.7 485.7 105.0 477.0 104.0 462.0C103.0 447.0 97.7 427.0 96.0 410.0C94.3 393.0 93.7 374.7 94.0 360.0C94.3 345.3 96.0 335.0 98.0 322.0C100.0 309.0 105.7 297.0 106.0 282.0C106.3 267.0 102.0 246.3 100.0 232.0C98.0 217.7 96.3 197.7 94.0 196.0C91.7 194.3 88.7 211.0 86.0 222.0C83.3 233.0 80.7 248.0 78.0 262.0C75.3 276.0 72.7 290.3 70.0 306.0C67.3 321.7 63.7 343.3 62.0 356.0C60.3 368.7 61.0 374.7 60.0 382.0C59.0 389.3 58.3 396.3 56.0 400.0C53.7 403.7 49.0 405.3 46.0 404.0C43.0 402.7 39.0 397.0 38.0 392.0C37.0 387.0 38.7 381.7 40.0 374.0C41.3 366.3 44.0 358.3 46.0 346.0C48.0 333.7 50.0 316.0 52.0 300.0C54.0 284.0 56.3 265.7 58.0 250.0C59.7 234.3 60.7 219.3 62.0 206.0C63.3 192.7 64.0 180.0 66.0 170.0C68.0 160.0 69.3 152.0 74.0 146.0C78.7 140.0 86.7 137.0 94.0 134.0C101.3 131.0 111.3 130.7 118.0 128.0C124.7 125.3 130.8 123.0 134.0 118.0C137.2 113.0 134.3 101.7 137.0 98.0C139.7 94.3 145.7 96.0 150.0 96.0Z';
+  function mirror(d) { return d.replace(/([MLC ])(-?[\d.]+) (-?[\d.]+)/g, function (m, c, x, y) { return c + (300 - x) + ' ' + y; }); }
   function bodySvg() {
+    var compact = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+    function col(r) { var s = regionState(r); return s < 0 ? '#7a8db3' : STATES.color[s]; }
     function hot(r, shapes) {
-      var s = regionState(r), c = s < 0 ? '#4b5b7d' : STATES.color[s];
-      return '<g class="hot' + (state.region === r ? ' sel' : '') + '" data-action="region" data-v="' + r + '" role="button" tabindex="0" aria-label="' + esc(T(REGIONS[r].name)) + '" style="--c:' + c + '">' + shapes + '</g>';
+      var s = regionState(r);
+      return '<g class="hot anat' + (s >= 0 ? ' s' + s : '') + (state.region === r ? ' sel' : '') + '" data-action="region" data-v="' + r + '" role="button" tabindex="0" aria-pressed="' + (state.region === r) + '" aria-label="' + esc(T(REGIONS[r].name) + ': ' + (s < 0 ? u('notMeasured') : STATES.label[state.lang][s])) + '" style="--c:' + col(r) + '">' + shapes + '</g>';
     }
-    var sil = '<g class="sil"><circle cx="110" cy="42" r="27"/><rect x="99" y="64" width="22" height="16" rx="6"/><rect x="62" y="76" width="96" height="130" rx="28"/><rect x="32" y="84" width="26" height="122" rx="13"/><rect x="162" y="84" width="26" height="122" rx="13"/><rect x="70" y="200" width="36" height="196" rx="17"/><rect x="114" y="200" width="36" height="196" rx="17"/></g>';
-    var s = '<svg class="fig" viewBox="0 0 220 410" role="group" aria-label="' + esc(u('tab_body')) + '">' + sil;
-    s += hot('head', '<circle cx="110" cy="42" r="18"/>');
-    s += hot('lungs', '<ellipse cx="86" cy="118" rx="16" ry="25"/><ellipse cx="134" cy="118" rx="16" ry="25"/>');
-    s += hot('heart', '<circle cx="110" cy="128" r="12"/>');
-    s += hot('abdomen', '<rect x="80" y="160" width="60" height="40" rx="15"/>');
-    s += hot('bones', '<rect x="74" y="236" width="28" height="150" rx="13"/><rect x="118" y="236" width="28" height="150" rx="13"/>');
-    s += hot('body', '<rect x="36" y="92" width="18" height="106" rx="9"/><rect x="166" y="92" width="18" height="106" rx="9"/>');
+    function lbl(r, ax, ay, side, y) {
+      var s = regionState(r), x = side < 0 ? -102 : 402, lx = side < 0 ? -12 : 312;
+      return '<g class="hot lbl" data-action="region" data-v="' + r + '" aria-hidden="true" style="--c:' + col(r) + '"><path class="lead" d="M' + ax + ' ' + ay + 'L' + lx + ' ' + y + 'L' + (side < 0 ? -102 : 402) + ' ' + y + '"/><circle class="dot" cx="' + ax + '" cy="' + ay + '" r="3"/>' +
+        '<text x="' + x + '" y="' + (y - 6) + '" text-anchor="' + (side < 0 ? 'start' : 'end') + '">' + esc(T(REGIONS[r].name)) + '</text><text class="st" x="' + x + '" y="' + (y + 13) + '" text-anchor="' + (side < 0 ? 'start' : 'end') + '">' + esc(s < 0 ? u('notMeasured') : STATES.label[state.lang][s]) + '</text></g>';
+    }
+    var lungR = 'M146 150C130 146 118 160 116 190C114 215 118 232 124 236C134 236 144 230 146 222Z';
+    var ribs = '', y;
+    for (y = 146; y <= 226; y += 16) { ribs += 'M150 ' + y + 'C134 ' + (y - 6) + ' 118 ' + (y - 1) + ' 112 ' + (y + 16) + mirror('M150 ' + y + 'C134 ' + (y - 6) + ' 118 ' + (y - 1) + ' 112 ' + (y + 16)); }
+    var limbs = [[172, 360, 178, 462], [178, 472, 178, 592], [222, 148, 228, 252], [230, 262, 248, 356]];
+    var bones = '<path class="b" d="M120 330C130 318 170 318 180 330C186 344 176 356 164 358L150 350L136 358C124 356 114 344 120 330Z"/>' +
+      limbs.map(function (l) { return '<path class="b ln" d="M' + l[0] + ' ' + l[1] + 'L' + l[2] + ' ' + l[3] + mirror('M' + l[0] + ' ' + l[1] + 'L' + l[2] + ' ' + l[3]) + '"/>'; }).join('') +
+      '<circle class="b" cx="178" cy="467" r="6"/><circle class="b" cx="122" cy="467" r="6"/>';
+    var nodes = [[138, 112], [162, 112], [114, 176], [186, 176], [130, 352], [170, 352]].map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4.5"/>'; }).join('');
+    var vb = compact ? '0 0 300 640' : '-110 0 520 640';
+    var s = '<svg class="fig anatomy" viewBox="' + vb + '" role="group" aria-label="' + esc(u('tab_body')) + '">' +
+      '<defs><linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fe3ff"/><stop offset="1" stop-color="#2f7fb8"/></linearGradient>' +
+      '<radialGradient id="shine" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>' +
+      '<g class="skin"><ellipse cx="150" cy="58" rx="30" ry="38"/><path d="' + SIL_PATH + '"/></g>' +
+      '<g class="skel"><path d="M150 100V340"/><path d="' + ribs + '"/></g>';
+    s += hot('body', '<path class="outline" d="' + SIL_PATH + '"/><ellipse class="outline" cx="150" cy="58" rx="30" ry="38"/>' + nodes + '<ellipse cx="190" cy="258" rx="7" ry="12"/><path d="M144 156C144 148 156 148 156 156L153 170H147Z"/>');
+    s += hot('bones', bones);
+    s += hot('head', '<path d="M150 26C170 26 176 40 175 54C174 66 166 72 150 72C134 72 126 66 125 54C124 40 130 26 150 26Z"/><path class="detail" d="M150 28V70M136 38C142 42 138 48 144 52M164 38C158 42 162 48 156 52M132 58C138 56 140 62 146 60M168 58C162 56 160 62 154 60"/><path class="sh" d="M150 26C170 26 176 40 175 54C174 66 166 72 150 72C134 72 126 66 125 54C124 40 130 26 150 26Z"/>');
+    s += hot('lungs', '<path class="detail tr" d="M150 98V146M150 146L138 160M150 146L162 160"/><path d="' + lungR + '"/><path d="M154 150C170 146 182 160 184 190C186 215 182 232 176 236C168 236 160 232 156 226C162 214 158 204 154 200Z"/><path class="sh" d="' + lungR + '"/>');
+    s += hot('heart', '<path class="detail" d="M156 192C156 176 170 172 174 184"/><path d="M150 196C150 186 162 184 166 192C170 186 182 190 178 202C175 214 162 222 156 228C150 220 146 208 150 196Z"/><path class="sh" d="M150 196C150 186 162 184 166 192C170 186 182 190 178 202C175 214 162 222 156 228C150 220 146 208 150 196Z"/>');
+    s += hot('abdomen', '<path d="M120 240C140 234 170 236 176 244C170 256 150 262 120 266C114 256 114 246 120 240Z"/><path d="M166 250C184 246 190 264 182 276C174 286 160 282 156 272C162 268 166 260 166 250Z"/><rect x="114" y="282" width="72" height="50" rx="16"/><path class="detail" d="M124 296C134 290 140 302 150 296S166 290 176 296M124 310C134 304 140 316 150 310S166 304 176 310M124 322C134 316 140 328 150 322S166 316 176 322"/><rect class="sh" x="114" y="282" width="72" height="50" rx="16"/>');
+    if (!compact) {
+      s += lbl('head', 126, 50, -1, 50) + lbl('heart', 152, 206, -1, 206) + lbl('bones', 122, 430, -1, 430) +
+        lbl('lungs', 180, 180, 1, 150) + lbl('body', 196, 258, 1, 250) + lbl('abdomen', 186, 308, 1, 330);
+    }
     return s + '</svg>';
   }
   function renderBody() {
@@ -524,7 +592,7 @@
     var legend = '<div class="legend">' + Object.keys(REGIONS).map(function (k) {
       return '<button class="btn sm" data-action="region" data-v="' + k + '" aria-pressed="' + (state.region === k) + '">' + esc(T(REGIONS[k].name)) + ' ' + badge(regionState(k)) + '</button>';
     }).join('') + '</div>';
-    $('main').innerHTML = '<div class="fig-wrap"><div>' + bodySvg() + legend + '</div><div>' + panel + '</div></div>';
+    $('main').innerHTML = '<div class="fig-wrap anat-wrap"><div>' + bodySvg() + legend + '</div><div>' + panel + '</div></div>';
   }
 
   /* ---------- render: medir ---------- */
@@ -725,8 +793,73 @@
     lines.push(state.lang === 'es' ? 'Ayuda solicitada: (completar)' : 'Help requested: (fill in)');
     return lines.join('\n');
   }
+  /* ---------- render: escenarios (evento -> indicadores -> accion) ---------- */
+  var HZ_ICON = {
+    radiation: '<circle cx="12" cy="12" r="2.2"/><path d="M12 9.8 8.2 3.2A10 10 0 0 0 2 12h7.6M14.2 12H22a10 10 0 0 0-6.2-8.8L12 9.8M10.9 14 7 20.7a10 10 0 0 0 10 0L13.1 14"/>',
+    gravity: '<circle cx="12" cy="12" r="4"/><ellipse cx="12" cy="12" rx="10.5" ry="4" transform="rotate(-25 12 12)" fill="none"/>',
+    isolation: '<circle cx="12" cy="7" r="3.2"/><path d="M5 21c0-4.4 3-7 7-7s7 2.6 7 7z"/><circle cx="12" cy="13" r="10.5" fill="none" stroke-dasharray="2 3"/>',
+    closed: '<rect x="4" y="3" width="16" height="18" rx="8" fill="none"/><path d="M8 10h8M8 14h8" fill="none"/>',
+    distance: '<circle cx="5" cy="17" r="3"/><circle cx="19" cy="6" r="2"/><path d="M7.5 15 17 7.5" fill="none" stroke-dasharray="2 2"/>'
+  };
+  var SCN = [
+    { id: 'solar', hz: 'radiation', em: 'radiation', regions: ['body', 'head'], src: [0, 3, 5, 6],
+      title: { es: 'Tormenta solar', en: 'Solar storm' },
+      event: { es: 'El Sol lanza una ráfaga de partículas. La dosis de radiación puede subir en pocas horas.', en: 'The Sun releases a burst of particles. Radiation dose can rise within a few hours.' },
+      demo: { radiation: { radiation: 320 }, temp: { temp: 37.2 } },
+      act: { es: ['Ir de inmediato al refugio con más blindaje.', 'Anotar la dosis de radiación cada hora.', 'Avisar a control de misión y esperar su permiso para salir.'], en: ['Go straight to the best-shielded shelter.', 'Log the radiation dose every hour.', 'Tell mission control and wait for clearance to leave.'] } },
+    { id: 'fluids', hz: 'gravity', em: 'chest', regions: ['heart', 'bones'], src: [0, 1, 5, 6],
+      title: { es: 'Microgravedad: los líquidos suben', en: 'Microgravity: fluids shift up' },
+      event: { es: 'Sin gravedad, la sangre y los líquidos se van hacia la cabeza. El corazón y los huesos trabajan menos y se debilitan.', en: 'Without gravity, blood and fluids move toward the head. Heart and bones work less and weaken.' },
+      demo: { bp: { sys: 138, dia: 88 }, hr: { hr: 108 }, exercise: { exercise: 30 } },
+      act: { es: ['Medir presión y pulso en reposo, sentado.', 'Cumplir el ejercicio diario (cinta, bici, pesas).', 'Si hay dolor de pecho, desmayo o mareo fuerte: Emergencia.'], en: ['Measure blood pressure and pulse at rest, seated.', 'Do the daily exercise (treadmill, bike, weights).', 'If there is chest pain, fainting or strong dizziness: Emergency.'] } },
+    { id: 'isolation', hz: 'isolation', em: 'mental', regions: ['head'], src: [0, 1, 2, 6],
+      title: { es: 'Aislamiento prolongado', en: 'Long isolation' },
+      event: { es: 'Meses en un espacio pequeño, lejos de la familia y con poca luz natural alteran el sueño y el ánimo.', en: 'Months in a small space, far from family and with little daylight, disrupt sleep and mood.' },
+      demo: { sleep: { sleep: 5.5 }, mood: { mood: 3 } },
+      act: { es: ['Mantener horarios fijos de sueño y luz.', 'Hablar con un compañero o con apoyo psicológico.', 'Si hay una crisis: no dejar solo al tripulante (Emergencia).'], en: ['Keep fixed sleep and light schedules.', 'Talk with a teammate or psychological support.', 'In a crisis: never leave the crew member alone (Emergency).'] } },
+    { id: 'cabin', hz: 'closed', em: 'fever', regions: ['lungs', 'body'], src: [0, 1, 5, 6],
+      title: { es: 'Aire de cabina e infección', en: 'Cabin air and infection' },
+      event: { es: 'En una cabina cerrada, un fallo del aire o un virus afecta rápido a toda la tripulación.', en: 'In a closed cabin, an air failure or a virus quickly affects the whole crew.' },
+      demo: { spo2: { spo2: 93 }, temp: { temp: 38.6 }, hr: { hr: 104 } },
+      act: { es: ['Medir oxígeno en sangre y temperatura a todos.', 'Separar a quien tenga síntomas y usar mascarilla.', 'Revisar el sistema de aire y avisar a control de misión.'], en: ['Measure blood oxygen and temperature for everyone.', 'Separate anyone with symptoms and use masks.', 'Check the air system and tell mission control.'] } }
+  ];
+  function scnById(id) { for (var i = 0; i < SCN.length; i++) if (SCN[i].id === id) return SCN[i]; return SCN[0]; }
+  function hzIcon(h) { return '<svg class="hz-ic" viewBox="0 0 24 24" aria-hidden="true">' + HZ_ICON[h] + '</svg>'; }
+  function renderScenarios() {
+    var sc = scnById(state.scn);
+    var h = '<h2>' + esc(u('tab_scenarios')) + '</h2><p class="muted">' + esc(u('scnIntro')) + '</p><div class="scn-pick">';
+    SCN.forEach(function (x) {
+      h += '<button data-action="scn" data-v="' + x.id + '" aria-pressed="' + (x.id === sc.id) + '">' + hzIcon(x.hz) + '<span>' + esc(T(x.title)) + '</span></button>';
+    });
+    h += '</div><ol class="flow" aria-label="' + esc(u('scnFlow')) + '">';
+    h += '<li class="node n-event"><span class="step">1 · ' + esc(u('scnEvent')) + '</span>' + hzIcon(sc.hz) + '<h3>' + esc(T(sc.title)) + '</h3><p>' + esc(T(sc.event)) + '</p>' +
+      '<p class="small"><span class="chip on">' + esc(T(HAZARDS[sc.hz])) + '</span></p><p class="small muted"><b>' + esc(u('scnLong')) + ':</b> ' + esc(T(HAZARD_INFO[sc.hz])) + '</p>' +
+      '<p class="small muted"><b>' + esc(u('delay')) + ':</b> ' + esc(T(ENVS[state.env].delay)) + '</p></li>';
+    h += '<li class="node n-body"><span class="step">2 · ' + esc(u('scnBody')) + '</span><div class="scn-regions">' + sc.regions.map(function (r) {
+      var s = regionState(r);
+      return '<button class="reg" data-action="regionGo" data-v="' + r + '" style="--c:' + (s < 0 ? '#7a8db3' : STATES.color[s]) + '"><span class="dotc"></span>' + esc(T(REGIONS[r].name)) + ' ' + badge(s) + '</button>';
+    }).join('') + '</div></li>';
+    h += '<li class="node n-ind"><span class="step">3 · ' + esc(u('scnInd')) + '</span>' + Object.keys(sc.demo).map(function (id) {
+      var ind = byId(id), l = latest(id), s = l ? l.state : -1;
+      return '<button class="ind-row s' + s + '" data-action="open" data-v="' + id + '"><b>' + esc(T(ind.name)) + '</b><span>' + (l ? esc(valueText(l)) : '—') + '</span>' + badge(s) + '</button>';
+    }).join('') + '<p class="small muted">' + esc(u('scnIndHint')) + '</p></li>';
+    h += '<li class="node n-act"><span class="step">4 · ' + esc(u('scnAct')) + '</span><ol class="steps">' + T(sc.act).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol>' +
+      '<div class="row"><button class="btn primary" data-action="scnDemo" data-v="' + sc.id + '">' + esc(u('scnDemo')) + '</button>' +
+      '<button class="btn danger" data-action="scnEm" data-v="' + sc.em + '">' + esc(u('scnGoEm')) + ': ' + esc(T(EMERGENCY[sc.em].title)) + '</button></div>' +
+      '<p class="small muted">' + esc(u('scnDemoHint')) + '</p></li></ol>';
+    h += '<div class="box scn-src"><h3>' + esc(u('scnSources')) + '</h3><ul class="small">' + sc.src.map(function (i) { return '<li><a href="' + esc(SOURCES[i].u) + '" target="_blank" rel="noopener">' + esc(SOURCES[i].t) + '</a></li>'; }).join('') + '</ul></div>';
+    $('main').innerHTML = h;
+  }
+  function loadDemo(sc) {
+    Object.keys(sc.demo).forEach(function (id) { var e = addEntry(id, sc.demo[id]); if (e) e.source = 'demo'; });
+    var ok = save(); render();
+    if (ok) toast(u('demoLoaded') + ': ' + T(sc.title));
+  }
   function renderEmergency() {
-    var h = '<h2>' + esc(u('tab_emergency')) + '</h2><p class="muted">' + esc(u('emIntro')) + '</p><div class="pick">';
+    var cur = !state.em.sc || !EMERGENCY[state.em.sc] ? 2 : (EMERGENCY[state.em.sc].nodes && EMERGENCY[state.em.sc].nodes[state.em.node || EMERGENCY[state.em.sc].start].q ? 3 : 4);
+    var h = '<h2>' + esc(u('emTitle')) + '</h2><ol class="stepper">' + [1, 2, 3, 4].map(function (i) {
+      return '<li class="' + (i < cur ? 'done' : (i === cur ? 'on' : '')) + '"' + (i === cur ? ' aria-current="step"' : '') + '><span class="num">' + i + '</span><b>' + esc(u('emS' + i)) + '</b><span class="small">' + esc(u('emS' + i + 'd')) + '</span></li>';
+    }).join('') + '</ol><p class="muted">' + esc(u('emIntro')) + '</p><div class="pick">';
     Object.keys(EMERGENCY).forEach(function (k) {
       h += '<button data-action="emSc" data-v="' + k + '" aria-pressed="' + (state.em.sc === k) + '">' + esc(T(EMERGENCY[k].title)) + '</button>';
     });
@@ -782,6 +915,7 @@
     renderHeader(); renderTabs(); renderFooter();
     if (state.tab === 'dashboard') renderDashboard();
     else if (state.tab === 'body') renderBody();
+    else if (state.tab === 'scenarios') renderScenarios();
     else if (state.tab === 'measure') renderMeasure();
     else if (state.tab === 'routine') renderRoutine();
     else if (state.tab === 'crew') renderCrew();
@@ -796,6 +930,7 @@
     switch (a) {
       case 'tab': closeDlg(); go(v); break;
       case 'lang': state.lang = v; save(); render(); break;
+      case 'motion': state.motion = state.motion === false; save(); renderFooter(); sky.sync(); break;
       case 'sos': closeDlg(); state.em = { sc: null, node: null }; go('emergency'); break;
       case 'open': openDetail(v); break;
       case 'closeDlg': closeDlg(); break;
@@ -816,6 +951,11 @@
         } break;
       case 'emSc': state.em = { sc: v, node: null }; renderEmergency(); break;
       case 'emAns': state.em.node = v; renderEmergency(); break;
+      case 'scn': state.scn = v; save(); renderScenarios(); break;
+      case 'scnDemo': loadDemo(scnById(v)); break;
+      case 'scnEm': state.em = { sc: v, node: null }; go('emergency'); break;
+      case 'regionGo': state.region = v; go('body'); break;
+      case 'guide': state.guide = !state.guide; save(); renderDashboard(); break;
       case 'copy': (function () { var t = $('sum'); t.select(); var done = function () { toast(u('copied')); }; if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t.value).then(done, function () { document.execCommand('copy'); done(); }); } else { document.execCommand('copy'); done(); } })(); break;
       case 'earth': state.env = 'earth'; save(); go('dashboard'); break;
       default: break;
@@ -850,6 +990,88 @@
   });
   $('dlg').addEventListener('click', function (ev) { if (ev.target === $('dlg')) { closeDlg(); } });
   window.addEventListener('resize', syncTop);
+
+  /* ---------- fondo: espacio profundo con parallax ---------- */
+  var sky = (function () {
+    var cv = document.createElement('canvas'), ctx = cv.getContext && cv.getContext('2d');
+    if (!ctx) return { sync: function () {} };
+    cv.id = 'sky'; cv.setAttribute('aria-hidden', 'true');
+    document.body.insertBefore(cv, document.body.firstChild);
+    var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+    var W = 0, H = 0, dpr = 1, layers = [], nebula = null, galaxies = [], raf = 0, last = 0, drift = 0;
+    var px = 0, py = 0, tx = 0, ty = 0;
+    var CONST = [[.70, .16], [.735, .20], [.77, .215], [.81, .205], [.835, .26], [.79, .29], [.76, .25]];
+    function rnd(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+    function moving() { return !mq.matches && state.motion !== false; }
+    function makeNebula() {
+      var c = document.createElement('canvas'), g = c.getContext('2d'); c.width = 640; c.height = 400;
+      [[.18, .25, .45, 'rgba(110,60,190,.30)'], [.78, .62, .5, 'rgba(30,120,170,.26)'], [.55, .15, .3, 'rgba(190,60,130,.16)'], [.35, .8, .35, 'rgba(40,90,180,.18)']].forEach(function (n) {
+        var gr = g.createRadialGradient(n[0] * 640, n[1] * 400, 0, n[0] * 640, n[1] * 400, n[2] * 640);
+        gr.addColorStop(0, n[3]); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 640, 400);
+      });
+      return c;
+    }
+    function makeGalaxy(r, tilt, hue) {
+      var c = document.createElement('canvas'), g = c.getContext('2d'), s = r * 2; c.width = c.height = s;
+      g.translate(r, r); g.rotate(tilt); g.scale(1, .38);
+      var gr = g.createRadialGradient(0, 0, 0, 0, 0, r);
+      gr.addColorStop(0, 'hsla(' + hue + ',80%,92%,.9)'); gr.addColorStop(.15, 'hsla(' + hue + ',70%,75%,.45)'); gr.addColorStop(.6, 'hsla(' + (hue + 30) + ',60%,55%,.10)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = gr; g.beginPath(); g.arc(0, 0, r, 0, 6.2832); g.fill();
+      return c;
+    }
+    function build() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2); W = window.innerWidth; H = window.innerHeight;
+      cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var r = rnd(7), area = W * H / 9000;
+      layers = [[.6, .4, 1.1, 2, .03], [.25, .8, 1.6, 6, .08], [.09, 1.2, 2.2, 14, .18]].map(function (L) {
+        var n = Math.round(area * L[0] * 3), stars = [];
+        for (var i = 0; i < n; i++) { stars.push({ x: r(), y: r(), s: L[1] + r() * (L[2] - L[1]), a: .45 + r() * .55, f: .5 + r() * 2, p: r() * 6.28, c: r() < .12 ? '#ffd9b0' : (r() < .2 ? '#b9d4ff' : '#ffffff') }); }
+        return { stars: stars, speed: L[3], par: L[4] };
+      });
+      if (!nebula) { nebula = makeNebula(); galaxies = [{ c: makeGalaxy(70, -.5, 220), x: .12, y: .7 }, { c: makeGalaxy(38, .9, 30), x: .88, y: .48 }]; }
+    }
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      var sy = window.scrollY || 0, mx = px * 30, my = py * 20;
+      ctx.globalAlpha = 1;
+      ctx.drawImage(nebula, -40 - mx * .3, -40 - my * .3 - sy * .02, W + 80, H + 80);
+      galaxies.forEach(function (g) { ctx.globalAlpha = .8; ctx.drawImage(g.c, g.x * W - g.c.width / 2 - mx * .5, g.y * H - g.c.height / 2 - my * .5 - sy * .04); });
+      layers.forEach(function (L, li) {
+        var off = drift * L.speed, dy = sy * L.par;
+        L.stars.forEach(function (s) {
+          var x = ((s.x * W - off - mx * L.par * 4) % W + W) % W, y = ((s.y * H - dy - my * L.par * 4) % H + H) % H;
+          var tw = moving() && li < 2 ? .75 + .25 * Math.sin(t / 1000 * s.f + s.p) : 1;
+          ctx.globalAlpha = s.a * tw; ctx.fillStyle = s.c;
+          ctx.beginPath(); ctx.arc(x, y, s.s / 2 + (li === 2 ? .2 : 0), 0, 6.2832); ctx.fill();
+          if (li === 2 && s.s > 1.9) { ctx.globalAlpha = s.a * .25; ctx.fillRect(x - s.s * 2, y - .3, s.s * 4, .6); ctx.fillRect(x - .3, y - s.s * 2, .6, s.s * 4); }
+        });
+      });
+      var cx = -mx * .6, cy = -sy * .06 - my * .6, pts = CONST.map(function (p) { return [p[0] * W + cx, p[1] * H + cy]; });
+      ctx.globalAlpha = .28; ctx.strokeStyle = '#8fb4ff'; ctx.lineWidth = .8; ctx.beginPath();
+      pts.forEach(function (p, i) { if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); }); ctx.lineTo(pts[3][0], pts[3][1]); ctx.stroke();
+      ctx.globalAlpha = .9; ctx.fillStyle = '#dfe9ff';
+      pts.forEach(function (p) { ctx.beginPath(); ctx.arc(p[0], p[1], 1.6, 0, 6.2832); ctx.fill(); });
+      ctx.globalAlpha = 1;
+    }
+    function loop(t) {
+      raf = 0;
+      if (!moving() || document.hidden) { draw(t || 0); return; }
+      var dt = last ? Math.min(t - last, 64) : 16; last = t;
+      drift += dt / 1000; px += (tx - px) * .05; py += (ty - py) * .05;
+      draw(t); raf = requestAnimationFrame(loop);
+    }
+    function sync() { last = 0; if (!raf) raf = requestAnimationFrame(loop); }
+    build(); sync();
+    window.addEventListener('resize', function () { build(); sync(); });
+    window.addEventListener('scroll', function () { if (!moving()) sync(); }, { passive: true });
+    window.addEventListener('pointermove', function (e) { if (moving()) { tx = e.clientX / W - .5; ty = e.clientY / H - .5; } }, { passive: true });
+    document.addEventListener('visibilitychange', sync);
+    var wasCompact = window.innerWidth <= 640;
+    window.addEventListener('resize', function () { var c = window.innerWidth <= 640; if (c !== wasCompact) { wasCompact = c; if (state.tab === 'body') renderBody(); } });
+    if (mq.addEventListener) mq.addEventListener('change', function () { sync(); renderFooter(); });
+    return { sync: sync, reduced: function () { return mq.matches; } };
+  })();
 
   render();
   var p = pendingToday().length;
