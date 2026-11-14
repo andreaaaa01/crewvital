@@ -852,7 +852,8 @@
   }
   function loadDemo(sc) {
     Object.keys(sc.demo).forEach(function (id) { var e = addEntry(id, sc.demo[id]); if (e) e.source = 'demo'; });
-    save(); render(); toast(u('demoLoaded') + ': ' + T(sc.title));
+    var ok = save(); render();
+    if (ok) toast(u('demoLoaded') + ': ' + T(sc.title));
   }
   function renderEmergency() {
     var cur = !state.em.sc || !EMERGENCY[state.em.sc] ? 2 : (EMERGENCY[state.em.sc].nodes && EMERGENCY[state.em.sc].nodes[state.em.node || EMERGENCY[state.em.sc].start].q ? 3 : 4);
