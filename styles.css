@@ -128,3 +128,29 @@ textarea.summary { width: 100%; min-height: 130px; background: var(--bg); color:
 .em-box { border: 2px solid var(--bad); background: #25121a; border-radius: var(--radius); padding: 1rem; }
 .em-box.l1 { border-color: var(--warn); background: #231d10; }
 footer { max-width: 1100px; margin: 1rem auto 2rem; padding: 0 1rem; color: var(--muted); font-size: .78rem; }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.crew-sum { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin: .6rem 0 .9rem; }
+.crew-stat { display: flex; flex-direction: column; align-items: center; gap: .3rem; background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: var(--radius); padding: .6rem .4rem; }
+.crew-stat.s0 { border-top-color: var(--ok); } .crew-stat.s1 { border-top-color: var(--warn); } .crew-stat.s2 { border-top-color: var(--bad); }
+.crew-stat.s2:not(.zero) { background: #2a1519; }
+.crew-stat.zero { opacity: .55; }
+.crew-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.crew-card { display: flex; flex-direction: column; gap: .45rem; background: var(--panel); border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: var(--radius); padding: .8rem; }
+.crew-card.s0 { border-left-color: var(--ok); } .crew-card.s1 { border-left-color: var(--warn); } .crew-card.s2 { border-left-color: var(--bad); }
+.crew-card.on { box-shadow: 0 0 0 1px var(--accent); }
+.crew-card .meta { font-size: .75rem; color: var(--muted); }
+.crew-name { font-size: 1.05rem; overflow-wrap: anywhere; }
+.crew-ok { color: var(--ok); margin: 0; }
+.crew-flags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.crew-flags .badge { white-space: normal; }
+.crew-prog { margin-top: auto; }
+.crew-prog .row { margin-bottom: 3px; color: var(--muted); }
+.crew-act { margin-top: .2rem; }
+.crew-matrix { margin-top: .8rem; }
+.crew-matrix summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.crew-matrix[open] summary { margin-bottom: .6rem; }
+.crew-matrix th[scope="row"] { position: sticky; left: 0; background: var(--panel); color: var(--text); white-space: nowrap; }
+.crew-list { display: flex; flex-direction: column; gap: .4rem; }
+.crew-list .txt, #crewForm .txt { flex: 1 1 180px; }
+@media (max-width: 520px) { .crew-sum { grid-template-columns: repeat(2, 1fr); } }

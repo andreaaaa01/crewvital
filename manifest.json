@@ -1,6 +1,7 @@
 {
   "name": "CrewVital - Monitoreo de salud para astronautas",
   "short_name": "CrewVital",
+  "id": "./index.html",
   "description": "Prototipo educativo de monitoreo de salud para tripulaciones espaciales. NASA Space Apps Challenge 2026.",
   "lang": "es",
   "start_url": "./index.html",
