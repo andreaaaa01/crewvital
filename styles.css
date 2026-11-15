@@ -127,7 +127,10 @@ textarea.summary { width: 100%; min-height: 130px; background: var(--bg); color:
 .em-q { font-size: 1.2rem; font-weight: 600; margin: .4rem 0 .8rem; }
 .em-box { border: 2px solid var(--bad); background: #25121a; border-radius: var(--radius); padding: 1rem; }
 .em-box.l1 { border-color: var(--warn); background: #231d10; }
-footer { max-width: 1100px; margin: 1rem auto 2rem; padding: 0 1rem; color: var(--muted); font-size: .78rem; }
+footer { max-width: 1100px; margin: 1rem auto 2rem; padding: 0 1rem; color: var(--muted); font-size: .78rem; min-height: 0; }
+.btn.block { display: block; width: 100%; text-align: center; padding: .75rem 1rem; font-size: 1rem; }
+.nm-box { border-color: rgba(255, 92, 92, .45) !important; background: rgba(42, 21, 25, .45); }
+.med-ov { margin-bottom: 1rem; }
 
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .crew-sum { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin: .6rem 0 .9rem; }

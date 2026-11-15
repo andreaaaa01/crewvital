@@ -304,7 +304,11 @@
     dualTitle: { es: 'También en la Tierra', en: 'Also on Earth' },
     dualText: { es: 'La misma lógica de autodiagnóstico asistido (medir, explicar, alertar, escalar) sirve en comunidades remotas con poco acceso a médicos. Cambia el entorno a "Tierra: comunidad remota" para ver cómo se adapta el contacto y la evacuación.', en: 'The same assisted self-diagnosis logic (measure, explain, alert, escalate) serves remote communities with limited access to doctors. Switch the environment to "Earth: remote community" to see how contact and evacuation adapt.' },
     dualBtn: { es: 'Ver en modo comunidad remota', en: 'View as remote community' },
-    notProd: { es: 'CrewVital · Monitoreo de salud de la tripulación. Uso informativo: no reemplaza el criterio del médico de vuelo.', en: 'CrewVital · Crew health monitoring. Informational use: does not replace the flight surgeon\'s judgment.' },
+    notProd: { es: '', en: '' },
+    medOverview: { es: 'Resumen de toda la tripulación a bordo', en: 'Overview of the whole crew on board' },
+    medOverviewHint: { es: 'Semáforo de cada tripulante. Toca Abrir panel o Medir para ver su diagnóstico.', en: 'Traffic light per crew member. Tap Open dashboard or Measure to see their check-up.' },
+    medDiagAll: { es: 'Ver diagnóstico de todos', en: 'See everyone\'s diagnosis' },
+    resetCrewNow: { es: 'Restaurar 4 tripulantes', en: 'Restore 4 crew members' },
     ind: { es: 'Indicador', en: 'Indicator' },
     crit: { es: 'Crítico', en: 'Critical' },
     caut: { es: 'Precaución', en: 'Caution' },
@@ -337,6 +341,7 @@
       crew: [1, 2, 3, 4].map(function (n) { return { id: 'c' + n, name: 'Tripulante ' + n }; }), cseq: 4, who: 'c1', em: { sc: null, node: null }, guide: true, role: null, dg: { mode: null, region: null }, bg: null, medMode: null, phase: 'pre', remote: null, note: { sit: '', steps: '', ts: 0 }, scn: 'solar' };
   }
   var state = load();
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore full storage on boot pad */ }
   var pendingImg = null;
   var lastResult = null;
   var toastTimer = null;
@@ -376,10 +381,13 @@
       var crew = s.crew.filter(function (c) { return c && typeof c.id === 'string' && typeof c.name === 'string' && c.name; });
       if (crew.length) d.crew = crew;
     }
-    if (d.crew.length === 1 && d.crew[0].id === 'c1' && /^(Tripulante|Crew member) 1$/.test(d.crew[0].name) && !(Array.isArray(s.entries) && s.entries.length)) d.crew = defaults().crew;
+    d.cseq = Math.max(typeof s.cseq === 'number' ? s.cseq : 0, d.crew.reduce(function (m, c) { var n = parseInt(String(c.id).slice(1), 10); return isNaN(n) ? m : Math.max(m, n); }, 0));
+    while (d.crew.length < 4) {
+      d.cseq += 1;
+      d.crew.push({ id: 'c' + d.cseq, name: (d.lang === 'en' ? 'Crew member ' : 'Tripulante ') + d.cseq });
+    }
     var ids = d.crew.map(function (c) { return c.id; });
     d.who = ids.indexOf(s.who) >= 0 ? s.who : ids[0];
-    d.cseq = Math.max(typeof s.cseq === 'number' ? s.cseq : 0, d.crew.reduce(function (m, c) { var n = parseInt(String(c.id).slice(1), 10); return isNaN(n) ? m : Math.max(m, n); }, 0));
     d.seq = typeof s.seq === 'number' ? s.seq : 0;
     if (Array.isArray(s.entries)) d.entries = s.entries.filter(function (e) { return validEntry(e, ids); });
     return d;
@@ -597,7 +605,8 @@
         }).join('') + '</div>';
       }).join('') +
       '<div class="dr-grp"><h3>' + esc(u('bgLabel')) + '</h3>' + bgSwitch() + '</div>' +
-      '<div class="lang dr-lang" role="group" aria-label="' + esc(u('setLang')) + '"><button data-action="lang" data-v="es" aria-pressed="' + (state.lang === 'es') + '">ES</button><button data-action="lang" data-v="en" aria-pressed="' + (state.lang === 'en') + '">EN</button></div>';
+      '<div class="lang dr-lang" role="group" aria-label="' + esc(u('setLang')) + '"><button data-action="lang" data-v="es" aria-pressed="' + (state.lang === 'es') + '">ES</button><button data-action="lang" data-v="en" aria-pressed="' + (state.lang === 'en') + '">EN</button></div>' +
+      '<div class="dr-grp"><button class="btn danger block" data-action="newMission">' + esc(u('newMission')) + '</button></div>';
     $('main').setAttribute('aria-label', state.role || state.tab === 'emergency' ? navLabel(state.tab) : u('roleTitle'));
     setMenu(menuOpen, true);
   }
@@ -613,7 +622,7 @@
     if (open) { var f = d.querySelector('[aria-current="page"]') || d.querySelector('.dr-item'); if (f) f.focus(); }
     else if (b) { b.focus(); }
   }
-  function renderFooter() { $('foot').innerHTML = '<p>' + esc(u('notProd')) + '</p>'; }
+  function renderFooter() { $('foot').innerHTML = ''; }
   function renderRole() {
     $('main').innerHTML = '<section class="role-pick"><h1>' + esc(u('roleTitle')) + '</h1><p class="muted">' + esc(u('roleHint')) + '</p><div class="role-cards">' +
       ['crew', 'medic'].map(function (r) {
@@ -645,9 +654,10 @@
     }).join('') + '</div>' +
       '<h3>' + esc(u('setLang')) + '</h3><div class="lang" role="group" aria-label="' + esc(u('setLang')) + '"><button data-action="lang" data-v="es" aria-pressed="' + (state.lang === 'es') + '">Español</button><button data-action="lang" data-v="en" aria-pressed="' + (state.lang === 'en') + '">English</button></div>' +
       '<h3>' + esc(u('tab_crew')) + '</h3><label class="ctl">' + esc(u('activeCrew')) + '<select id="whoSel2">' + crewOptions() + '</select></label><p><button class="btn sm" data-action="tab" data-v="crew">' + esc(u('setCrewBtn')) + '</button></p></div></div>';
+    h += '<div class="box nm-box" style="margin-top:.8rem"><h3>' + esc(u('newMission')) + '</h3><p class="small muted">' + esc(u('nmText')) + '</p>' +
+      '<button class="btn danger block" data-action="newMission">' + esc(u('newMission')) + '</button></div>';
     h += '<div class="box" style="margin-top:.8rem"><h3>' + esc(u('setMission')) + '</h3><p class="bigday">' + esc(u('day')) + ' <b>' + today() + '</b></p><p class="small muted">' + esc(u('dayAuto')) + '</p>' + dateField() +
-      '<h3>' + esc(u('reportPdf')) + '</h3>' + reportButtons(state.role === 'medic') +
-      '<p style="margin-top:1rem"><button class="btn danger" data-action="newMission">' + esc(u('newMission')) + '</button></p></div>';
+      '<h3>' + esc(u('reportPdf')) + '</h3>' + reportButtons(state.role === 'medic') + '</div>';
     $('main').innerHTML = h;
   }
   /* ---------- render: panel ---------- */
@@ -919,8 +929,9 @@
     h += '</div><div class="box"><div class="stats"><div><div class="stat">' + pts + '</div><div class="small muted">' + esc(u('pts')) + '</div></div><div><div class="stat">' + (Math.floor(pts / 200) + 1) + '</div><div class="small muted">' + esc(u('level')) + '</div></div><div><div class="stat">' + info.cur + '</div><div class="small muted">' + esc(u('streak')) + '</div></div></div>' +
       '<p class="small muted" style="margin-top:.6rem">' + esc(u('ptsNote')) + '</p>' +
       '<h3 style="margin-top:1rem">' + esc(u('medals')) + '</h3><div class="badges">' + medals.map(function (m) { return '<span class="medal' + (m.on ? ' on' : '') + '">' + esc(u(m.k)) + '</span>'; }).join('') + '</div></div></div>';
+    h += '<div class="box nm-box" style="margin-top:.8rem"><h3>' + esc(u('newMission')) + '</h3><button class="btn danger block" data-action="newMission">' + esc(u('newMission')) + '</button></div>';
     h += '<div class="box" style="margin-top:.8rem"><h3>' + esc(u('dataTools')) + '</h3>' + dateField() + reportButtons(false) +
-      '<p style="margin-top:.8rem"><button class="btn danger" data-action="newMission">' + esc(u('newMission')) + '</button></p><p class="small muted" style="margin-top:.6rem">' + esc(u('dataNote')) + '</p></div>';
+      '<p class="small muted" style="margin-top:.6rem">' + esc(u('dataNote')) + '</p></div>';
     $('main').innerHTML = h;
   }
   function csvCell(s) { return '"' + String(s).replace(/"/g, '""') + '"'; }
@@ -989,9 +1000,18 @@
     });
     h += '</table></div></details>';
     h += '<div class="box" style="margin-top:.8rem"><h3>' + esc(u('crewAddTitle')) + '</h3><form id="crewForm" class="row"><input class="txt" id="newCrew" type="text" maxlength="30" placeholder="' + esc(u('crewName')) + '" aria-label="' + esc(u('crewName')) + '">' +
-      '<button class="btn primary" type="submit">' + esc(u('addCrew')) + '</button></form></div>';
+      '<button class="btn primary" type="submit">' + esc(u('addCrew')) + '</button></form>' +
+      (state.crew.length < 4 ? '<p style="margin-top:.6rem"><button class="btn" data-action="padCrew">' + esc(u('resetCrewNow')) + '</button></p>' : '') + '</div>';
     h += '<div class="box" style="margin-top:.8rem"><h3>' + esc(u('reportPdfAll')) + '</h3>' + reportButtons(true) + '</div>';
+    h += '<div class="box nm-box" style="margin-top:.8rem"><button class="btn danger block" data-action="newMission">' + esc(u('newMission')) + '</button></div>';
     $('main').innerHTML = h;
+  }
+  function padCrewToFour() {
+    while (state.crew.length < 4) {
+      state.cseq += 1;
+      state.crew.push({ id: 'c' + state.cseq, name: (state.lang === 'en' ? 'Crew member ' : 'Tripulante ') + state.cseq });
+    }
+    save(); render(); toast(u('resetCrewNow') + ': ' + state.crew.length);
   }
   function addCrew(name) {
     state.cseq += 1;
@@ -1236,9 +1256,22 @@
         (c.alerts && c.alerts.length ? '<p class="small muted">' + esc(c.alerts.join(' · ')) + '</p>' : '') + '</article>';
     }).join('') + '</div>';
   }
+  function medicCrewOverview() {
+    var rows = crewRows(), n = { '-1': 0, 0: 0, 1: 0, 2: 0 };
+    rows.forEach(function (r) { n[r.w]++; });
+    var h = '<div class="box med-ov"><h2>' + esc(u('medOverview')) + '</h2><p class="small muted">' + esc(u('medOverviewHint')) + '</p>';
+    h += '<div class="crew-sum" role="list">' + [2, 1, 0, -1].map(function (s) {
+      return '<div class="crew-stat' + (s < 0 ? '' : ' s' + s) + (n[s] ? '' : ' zero') + '" role="listitem"><span class="stat">' + n[s] + '</span>' + badge(s) + '</div>';
+    }).join('') + '</div>';
+    h += '<div class="grid crew-grid">' + rows.map(crewCard).join('') + '</div>';
+    h += '<div class="row" style="margin-top:.6rem"><button class="btn primary" data-action="tab" data-v="crew">' + esc(u('medDiagAll')) + '</button>' +
+      '<button class="btn" data-action="pdf" data-v="all">' + esc(u('reportPdfAll')) + '</button></div></div>';
+    return h;
+  }
   function renderMedic() {
     var m = state.medMode;
-    var h = '<h2>' + esc(u('medTitle')) + '</h2><div class="dg-modes' + (m ? ' compact' : '') + '" role="group" aria-label="' + esc(u('tab_medic')) + '">' + ['onsite', 'remote'].map(function (k, i) {
+    var h = '<h2>' + esc(u('medTitle')) + '</h2>' + medicCrewOverview();
+    h += '<div class="dg-modes' + (m ? ' compact' : '') + '" role="group" aria-label="' + esc(u('tab_medic')) + '">' + ['onsite', 'remote'].map(function (k, i) {
       return '<button class="dg-mode" data-action="medMode" data-v="' + k + '" aria-pressed="' + (m === k) + '"><span class="dg-letter" aria-hidden="true">' + 'AB'[i] + '</span><b>' + esc(u('med_' + k)) + '</b><span class="small">' + esc(u('med_' + k + '_d')) + '</span></button>';
     }).join('') + '</div>';
     if (m === 'onsite') {
@@ -1252,7 +1285,7 @@
       }).join('') + '</div>';
     } else if (m === 'remote') {
       h += '<div class="grid g-2"><div class="box"><h3>' + esc(u('remImport')) + '</h3><label class="f"><input type="file" id="remFile" accept="application/pdf,.pdf"></label>' +
-        '<label class="f">' + esc(u('remPaste')) + '<textarea id="remCode" class="summary" rows="3"></textarea></label><div class="row"><button class="btn" data-action="remPaste">' + esc(u('remPasteBtn')) + '</button><button class="btn" data-action="remLocal">' + esc(u('remLocal')) + '</button></div></div>';
+        '<div class="row"><button class="btn primary" data-action="remLocal">' + esc(u('remLocal')) + '</button></div><p class="small muted">' + esc(u('remNone')) + '</p></div>';
       h += '<div class="box"><h3>' + esc(u('remSource')) + '</h3>' + (state.remote ? '<p class="small muted">' + esc(dateTime(state.remote.gen)) + ' · ' + esc(T((ENVS[state.remote.env] || ENVS[state.env]).name)) + ' · ' + esc(u('day')) + ' ' + esc(state.remote.day) + '</p>' + snapCards(state.remote) : '<p class="muted">' + esc(u('remNone')) + '</p>') + '</div></div>';
       h += '<div class="box" style="margin-top:.8rem"><label class="f">' + esc(u('noteSit')) + '<textarea id="noteSit" rows="4" placeholder="' + esc(u('noteSitPh')) + '">' + esc(state.note.sit) + '</textarea></label>' +
         '<label class="f">' + esc(u('noteSteps')) + '<textarea id="noteSteps" rows="5" placeholder="' + esc(u('noteStepsPh')) + '">' + esc(state.note.steps) + '</textarea></label>' +
@@ -1281,14 +1314,18 @@
   function openNewMission() {
     var dlg = $('dlg');
     dlg.innerHTML = '<div class="nm"><h2>' + esc(u('newMission')) + '</h2><p>' + esc(u('nmText')) + '</p><div class="row"><button class="btn" data-action="pdf" data-v="all">' + esc(u('reportPdfAll')) + '</button></div>' +
-      '<label class="chk"><input type="checkbox" id="nmCrew"> ' + esc(u('nmCrew')) + '</label><div class="row" style="justify-content:flex-end;margin-top:1rem"><button class="btn" data-action="closeDlg">' + esc(u('cancel')) + '</button><button class="btn danger" data-action="nmGo">' + esc(u('nmConfirm')) + '</button></div></div>';
+      '<label class="chk"><input type="checkbox" id="nmCrew" checked> ' + esc(u('nmCrew')) + '</label><div class="row" style="justify-content:flex-end;margin-top:1rem"><button class="btn" data-action="closeDlg">' + esc(u('cancel')) + '</button><button class="btn danger" data-action="nmGo">' + esc(u('nmConfirm')) + '</button></div></div>';
     if (dlg.showModal) { dlg.showModal(); } else { dlg.setAttribute('open', ''); }
   }
   function newMission() {
-    var c = $('nmCrew'), resetCrew = c && c.checked, d = defaults();
-    if (resetCrew) { state.crew = d.crew; state.cseq = d.cseq; }
+    var c = $('nmCrew'), resetCrew = !c || c.checked, d = defaults();
+    if (resetCrew) { state.crew = d.crew; state.cseq = d.cseq; state.who = 'c1'; }
     state.entries = []; state.seq = 0; state.dg = d.dg; state.em = d.em; state.sel = d.sel; state.region = null;
     state.missionStart = d.missionStart; state.remote = null; state.note = d.note; state.phase = 'pre';
+    while (state.crew.length < 4) {
+      state.cseq += 1;
+      state.crew.push({ id: 'c' + state.cseq, name: (state.lang === 'en' ? 'Crew member ' : 'Tripulante ') + state.cseq });
+    }
     if (!state.crew.some(function (x) { return x.id === state.who; })) state.who = state.crew[0].id;
     lastResult = null; msgShown = false;
     var ok = save(); closeDlg(); render();
@@ -1305,7 +1342,7 @@
       '<p class="small muted">' + esc(u('dateHelp').replace('{d}', minStartDate())) + '</p>';
   }
   function reportButtons(all) {
-    return '<div class="row"><button class="btn primary" data-action="pdf" data-v="' + (all ? 'all' : 'one') + '">' + esc(u(all ? 'reportPdfAll' : 'reportPdf')) + '</button><button class="btn" data-action="repCode" data-v="' + (all ? 'all' : 'one') + '">' + esc(u('reportCode')) + '</button><button class="btn sm" data-action="csv">CSV</button></div><p class="small muted">' + esc(u('reportCodeHint')) + '</p>';
+    return '<div class="row"><button class="btn primary" data-action="pdf" data-v="' + (all ? 'all' : 'one') + '">' + esc(u(all ? 'reportPdfAll' : 'reportPdf')) + '</button><button class="btn sm" data-action="csv">CSV</button></div>';
   }
 
   /* ---------- render: emergencia ---------- */
@@ -1502,6 +1539,7 @@
       case 'repCode': copyText(snapCode(snapshot(v === 'all' ? state.crew.map(function (c) { return c.id; }) : [state.who]))); break;
       case 'newMission': openNewMission(); break;
       case 'nmGo': newMission(); break;
+      case 'padCrew': padCrewToFour(); break;
       case 'medMode': state.medMode = v; msgShown = false; save(); renderMedic(); break;
       case 'phase': state.phase = v; save(); render(); break;
       case 'dgSpec': state.dg = { mode: 'specific', region: null }; state.sel = null; lastResult = null; go('diag'); break;
