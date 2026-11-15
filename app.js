@@ -1158,7 +1158,7 @@
   /* ---------- fondo segun entorno de mision ---------- */
   var sky = (function () {
     var cv = document.createElement('canvas'), ctx = cv.getContext && cv.getContext('2d');
-    if (!ctx) return { sync: function () {}, set: function () {} };
+    if (!ctx) return { sync: function () {}, set: function () {}, reduced: function () { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } };
     cv.id = 'sky'; cv.setAttribute('aria-hidden', 'true');
     document.body.insertBefore(cv, document.body.firstChild);
     var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
