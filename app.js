@@ -351,7 +351,7 @@
     if (!x || x.v !== 1 || !Array.isArray(x.crew) || !x.crew.every(function (c) { return c && typeof c.name === 'string' && Array.isArray(c.inds); })) return null;
     function st(v) { return [0, 1, 2].indexOf(v) >= 0 ? v : -1; }
     function num(v) { return typeof v === 'number' && isFinite(v) ? v : 0; }
-    return { v: 1, gen: num(x.gen), env: ENVS.hasOwnProperty(x.env) ? x.env : Object.keys(ENVS)[0], day: Math.round(num(x.day)), start: /^\d{4}-\d{2}-\d{2}$/.test(x.start || '') ? x.start : null, role: x.role === 'medic' ? 'medic' : 'crew',
+    return { v: 1, gen: num(x.gen), env: ENVS.hasOwnProperty(x.env) ? x.env : Object.keys(ENVS)[0], day: Math.round(num(x.day)), start: typeof x.start === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.start) ? x.start : null, role: x.role === 'medic' ? 'medic' : 'crew',
       crew: x.crew.map(function (c) {
         return { name: String(c.name).slice(0, 60), overall: st(c.overall), alerts: Array.isArray(c.alerts) ? c.alerts.filter(function (t) { return typeof t === 'string'; }) : [],
           inds: c.inds.filter(function (i) { return i && byId(i.id); }).map(function (i) {
