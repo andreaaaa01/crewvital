@@ -349,8 +349,16 @@
   }
   function cleanSnap(x) {
     if (!x || x.v !== 1 || !Array.isArray(x.crew) || !x.crew.every(function (c) { return c && typeof c.name === 'string' && Array.isArray(c.inds); })) return null;
-    x.crew.forEach(function (c) { c.inds = c.inds.filter(function (i) { return i && byId(i.id); }); if (!Array.isArray(c.alerts)) c.alerts = []; });
-    return x;
+    function st(v) { return [0, 1, 2].indexOf(v) >= 0 ? v : -1; }
+    function num(v) { return typeof v === 'number' && isFinite(v) ? v : 0; }
+    return { v: 1, gen: num(x.gen), env: ENVS.hasOwnProperty(x.env) ? x.env : state.env, day: Math.round(num(x.day)), start: /^\d{4}-\d{2}-\d{2}$/.test(x.start || '') ? x.start : null, role: x.role === 'medic' ? 'medic' : 'crew',
+      crew: x.crew.map(function (c) {
+        return { name: String(c.name).slice(0, 60), overall: st(c.overall), alerts: Array.isArray(c.alerts) ? c.alerts.filter(function (t) { return typeof t === 'string'; }) : [],
+          inds: c.inds.filter(function (i) { return i && byId(i.id); }).map(function (i) {
+            var ind = byId(i.id), ok = i.v && ind.fields.every(function (f) { return typeof i.v[f.key] === 'number' && isFinite(i.v[f.key]); });
+            return { id: ind.id, s: ok ? st(i.s) : -1, v: ok ? i.v : null, ts: ok ? num(i.ts) : 0, ph: i.ph === 'pre' || i.ph === 'post' ? i.ph : null };
+          }) };
+      }) };
   }
   function load() {
     var d = defaults(), s = null;
