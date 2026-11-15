@@ -334,7 +334,7 @@
   /* ---------- estado ---------- */
   function defaults() {
     return { lang: 'es', env: 'transit', missionStart: isoDate(new Date()), entries: [], seq: 0, tab: 'dashboard', sel: 'bp', region: null,
-      crew: [1, 2, 3, 4].map(function (n) { return { id: 'c' + n, name: 'Tripulante ' + n }; }), cseq: 4, who: 'c1', em: { sc: null, node: null }, guide: true, role: null, dg: { mode: null, region: null }, bg: null, medMode: null, phase: 'pre', remote: null, note: { sit: '', steps: '', ts: 0 }, scn: 'solar' };
+      crew: [1, 2, 3, 4].map(function (n) { return { id: 'c' + n, name: 'Tripulante ' + n }; }), cseq: 4, who: 'c1', em: { sc: null, node: null }, guide: true, role: null, dg: { mode: null, region: null }, crewV: 2, bg: null, medMode: null, phase: 'pre', remote: null, note: { sit: '', steps: '', ts: 0 }, scn: 'solar' };
   }
   var state = load();
   var pendingImg = null;
@@ -384,7 +384,7 @@
       var crew = s.crew.filter(function (c) { return c && typeof c.id === 'string' && typeof c.name === 'string' && c.name; });
       if (crew.length) d.crew = crew;
     }
-    if (d.crew.length === 1 && d.crew[0].id === 'c1' && /^(Tripulante|Crew member) 1$/.test(d.crew[0].name) && !(Array.isArray(s.entries) && s.entries.length)) d.crew = defaults().crew;
+    if (!s.crewV && d.crew.length === 1 && d.crew[0].id === 'c1' && /^(Tripulante|Crew member) 1$/.test(d.crew[0].name) && !(Array.isArray(s.entries) && s.entries.length)) d.crew = defaults().crew;
     var ids = d.crew.map(function (c) { return c.id; });
     d.who = ids.indexOf(s.who) >= 0 ? s.who : ids[0];
     d.cseq = Math.max(typeof s.cseq === 'number' ? s.cseq : 0, d.crew.reduce(function (m, c) { var n = parseInt(String(c.id).slice(1), 10); return isNaN(n) ? m : Math.max(m, n); }, 0));
