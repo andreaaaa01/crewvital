@@ -334,7 +334,7 @@
   /* ---------- estado ---------- */
   function defaults() {
     return { lang: 'es', env: 'transit', missionStart: isoDate(new Date()), entries: [], seq: 0, tab: 'dashboard', sel: 'bp', region: null,
-      crew: [1, 2, 3, 4].map(function (n) { return { id: 'c' + n, name: 'Tripulante ' + n }; }), cseq: 4, who: 'c1', em: { sc: null, node: null }, guide: true, role: null, dg: { mode: null, region: null }, bg: null, medMode: null, phase: 'pre', remote: null, note: { sit: '', steps: '', ts: 0 }, scn: 'solar' };
+      crew: [1, 2, 3, 4].map(function (n) { return { id: 'c' + n, name: 'Tripulante ' + n }; }), cseq: 4, who: 'c1', em: { sc: null, node: null }, guide: true, role: null, dg: { mode: null, region: null }, crewV: 2, bg: null, medMode: null, phase: 'pre', remote: null, note: { sit: '', steps: '', ts: 0 }, scn: 'solar' };
   }
   var state = load();
   var pendingImg = null;
@@ -349,8 +349,16 @@
   }
   function cleanSnap(x) {
     if (!x || x.v !== 1 || !Array.isArray(x.crew) || !x.crew.every(function (c) { return c && typeof c.name === 'string' && Array.isArray(c.inds); })) return null;
-    x.crew.forEach(function (c) { c.inds = c.inds.filter(function (i) { return i && byId(i.id); }); if (!Array.isArray(c.alerts)) c.alerts = []; });
-    return x;
+    function st(v) { return [0, 1, 2].indexOf(v) >= 0 ? v : -1; }
+    function num(v) { return typeof v === 'number' && isFinite(v) ? v : 0; }
+    return { v: 1, gen: num(x.gen), env: ENVS.hasOwnProperty(x.env) ? x.env : Object.keys(ENVS)[0], day: Math.round(num(x.day)), start: typeof x.start === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.start) ? x.start : null, role: x.role === 'medic' ? 'medic' : 'crew',
+      crew: x.crew.map(function (c) {
+        return { name: String(c.name).slice(0, 60), overall: st(c.overall), alerts: Array.isArray(c.alerts) ? c.alerts.filter(function (t) { return typeof t === 'string'; }) : [],
+          inds: c.inds.filter(function (i) { return i && byId(i.id); }).map(function (i) {
+            var ind = byId(i.id), ok = i.v && ind.fields.every(function (f) { return typeof i.v[f.key] === 'number' && isFinite(i.v[f.key]); });
+            return { id: ind.id, s: ok ? st(i.s) : -1, v: ok ? i.v : null, ts: ok ? num(i.ts) : 0, ph: i.ph === 'pre' || i.ph === 'post' ? i.ph : null };
+          }) };
+      }) };
   }
   function load() {
     var d = defaults(), s = null;
@@ -376,7 +384,7 @@
       var crew = s.crew.filter(function (c) { return c && typeof c.id === 'string' && typeof c.name === 'string' && c.name; });
       if (crew.length) d.crew = crew;
     }
-    if (d.crew.length === 1 && d.crew[0].id === 'c1' && /^(Tripulante|Crew member) 1$/.test(d.crew[0].name) && !(Array.isArray(s.entries) && s.entries.length)) d.crew = defaults().crew;
+    if (!s.crewV && d.crew.length === 1 && d.crew[0].id === 'c1' && /^(Tripulante|Crew member) 1$/.test(d.crew[0].name) && !(Array.isArray(s.entries) && s.entries.length)) d.crew = defaults().crew;
     var ids = d.crew.map(function (c) { return c.id; });
     d.who = ids.indexOf(s.who) >= 0 ? s.who : ids[0];
     d.cseq = Math.max(typeof s.cseq === 'number' ? s.cseq : 0, d.crew.reduce(function (m, c) { var n = parseInt(String(c.id).slice(1), 10); return isNaN(n) ? m : Math.max(m, n); }, 0));
@@ -785,11 +793,15 @@
   /* ---------- render: diagnostico (general / especifico) ---------- */
   var ORDER = Object.keys(REGIONS).reduce(function (a, r) { return a.concat(REGIONS[r].inds); }, []);
   function dgSeq() { return state.dg.mode === 'general' ? ORDER : (state.dg.region ? REGIONS[state.dg.region].inds : []); }
-  function firstPending(seq) { var t = today(); for (var i = 0; i < seq.length; i++) if (!hasEntry(seq[i], t)) return seq[i]; return null; }
+  function dgDone(id, t) {
+    if (!(state.role === 'medic' && state.medMode === 'onsite')) return hasEntry(id, t);
+    return state.entries.some(function (e) { return e.who === state.who && e.ind === id && e.day === t && e.phase === state.phase; });
+  }
+  function firstPending(seq) { var t = today(); for (var i = 0; i < seq.length; i++) if (!dgDone(seq[i], t)) return seq[i]; return null; }
   function dgCurrent(seq) { return seq.indexOf(state.sel) >= 0 ? state.sel : (firstPending(seq) || seq[0]); }
   function dgNext(seq, cur) {
     var t = today(), i = seq.indexOf(cur);
-    for (var k = 1; k < seq.length; k++) { var id = seq[(i + k) % seq.length]; if (!hasEntry(id, t)) return id; }
+    for (var k = 1; k < seq.length; k++) { var id = seq[(i + k) % seq.length]; if (!dgDone(id, t)) return id; }
     return null;
   }
   function measureForm(ind) {
@@ -829,7 +841,7 @@
     if (cur) state.sel = cur;
     state.region = cur ? byId(cur).region : dg.region;
     if (seq.length) {
-      var done = seq.filter(function (id) { return hasEntry(id, t); }).length;
+      var done = seq.filter(function (id) { return dgDone(id, t); }).length;
       h += '<div class="dg-prog"><div class="row" style="justify-content:space-between"><b>' + esc(u('dgProgress')) + (dg.mode === 'specific' ? ' · ' + esc(T(REGIONS[dg.region].name)) : '') + '</b><span class="stat-sm">' + done + '/' + seq.length + '</span></div>' +
         '<div class="bar" role="progressbar" aria-label="' + esc(u('dgProgress')) + '" aria-valuemin="0" aria-valuemax="' + seq.length + '" aria-valuenow="' + done + '"><i style="width:' + Math.round(100 * done / seq.length) + '%"></i></div></div>';
     }
@@ -840,7 +852,7 @@
     if (!cur) { panel = '<div class="box dg-hint"><p>' + esc(u('dgPickRegion')) + '</p></div>'; }
     else {
       panel = '<ol class="dg-steps">' + seq.map(function (id) {
-        var l = latest(id), ok = hasEntry(id, t);
+        var l = latest(id), ok = dgDone(id, t);
         return '<li><button data-action="dgInd" data-v="' + id + '" class="' + (ok ? 'done' : '') + (id === cur ? ' on' : '') + '"' + (id === cur ? ' aria-current="step"' : '') + '><span class="ck" aria-hidden="true">' + (ok ? '&#10003;' : '') + '</span>' + esc(T(byId(id).name)) + (ok && l ? ' ' + badge(l.state) : '') + '</button></li>';
       }).join('') + '</ol>';
       if (lastResult && lastResult.e.ind === cur) panel += dgResult(lastResult, seq);
@@ -1187,10 +1199,17 @@
     download(d.blob(snapCode(snap)), 'CrewVital_Informe_' + who + '_Dia' + snap.day + '_' + fileDate(snap.gen) + '.pdf');
     toast(u('reportDone'));
   }
+  function mEnv() { return state.remote ? state.remote.env : state.env; }
+  function mDay() {
+    var r = state.remote;
+    if (!r) return today();
+    if (r.start) { var p = r.start.split('-'); return Math.round((midnight(Date.now()) - new Date(+p[0], +p[1] - 1, +p[2]).getTime()) / 86400000) + 1; }
+    return r.day;
+  }
   function medicPdf() {
     var snap = state.remote, d = PdfDoc(u('rMedTitle')), now = Date.now();
-    d.header(u('rMedTitle'), T(ENVS[state.env].name) + ' · ' + u('day') + ' ' + today());
-    [[u('rGenBy'), u('role_medic')], [u('env'), T(ENVS[state.env].name)], [u('day'), String(today())], [u('rDate'), dateTime(now)], [u('delay'), T(ENVS[state.env].delay)]].forEach(function (r) {
+    d.header(u('rMedTitle'), T(ENVS[mEnv()].name) + ' · ' + u('day') + ' ' + mDay());
+    [[u('rGenBy'), u('role_medic')], [u('env'), T(ENVS[mEnv()].name)], [u('day'), String(mDay())], [u('rDate'), dateTime(now)], [u('delay'), T(ENVS[mEnv()].delay)]].forEach(function (r) {
       d.text(d.M, d.y() + 10, r[0] + ':', 9.5, true); d.text(d.M + 150, d.y() + 10, r[1], 9.5); d.y(d.y() + 15);
     });
     d.h2(u('noteSit')); d.para(state.note.sit || '-', 10.5);
@@ -1203,12 +1222,12 @@
         return [c.name, { t: stateText(c.overall), bg: stateRgb(c.overall) }, bad.join('; ') || u(c.overall < 0 ? 'crewNoData' : 'allInRange')];
       }));
     }
-    download(d.blob(), 'CrewVital_InformeMedico_Dia' + today() + '_' + fileDate(now) + '.pdf');
+    download(d.blob(), 'CrewVital_InformeMedico_Dia' + mDay() + '_' + fileDate(now) + '.pdf');
     toast(u('reportDone'));
   }
   function noteSteps() { return String(state.note.steps || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }
   function crewMessage() {
-    var L = [u('msgHead'), dateTime(Date.now()) + ' · ' + T(ENVS[state.env].name) + ' · ' + u('day') + ' ' + today(), u('delay') + ': ' + T(ENVS[state.env].delay), ''];
+    var L = [u('msgHead'), dateTime(Date.now()) + ' · ' + T(ENVS[mEnv()].name) + ' · ' + u('day') + ' ' + mDay(), u('delay') + ': ' + T(ENVS[mEnv()].delay), ''];
     if (state.note.sit) L.push(u('noteSit') + ':', state.note.sit, '');
     var st = noteSteps();
     if (st.length) { L.push(u('noteSteps').replace(/ \(.*\)$/, '') + ':'); st.forEach(function (s, i) { L.push((i + 1) + '. ' + s); }); L.push(''); }
