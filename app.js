@@ -4,7 +4,7 @@
   'use strict';
 
   var KEY = 'crewvital.v2';
-  var TABS = ['dashboard', 'body', 'scenarios', 'measure', 'routine', 'crew', 'emergency', 'science'];
+  var TABS = ['dashboard', 'diag', 'crew', 'scenarios', 'emergency', 'routine', 'science', 'settings'];
   var BASE_MIN = 7; /* dias previos necesarios para activar la linea base personal */
 
   var UI = {
@@ -14,10 +14,73 @@
     sos: { es: 'EMERGENCIA', en: 'EMERGENCY' },
     day: { es: 'Día de misión', en: 'Mission day' },
     tab_dashboard: { es: 'Panel', en: 'Dashboard' },
-    tab_body: { es: 'Cuerpo', en: 'Body' },
-    tab_measure: { es: 'Medir', en: 'Measure' },
+    tab_body: { es: 'Diagnóstico: mapa del cuerpo', en: 'Check-up: body map' },
+    tab_measure: { es: 'Diagnóstico', en: 'Check-up' },
     tab_routine: { es: 'Rutina y logros', en: 'Routine and rewards' },
     tab_crew: { es: 'Tripulación', en: 'Crew' },
+    tab_diag: { es: 'Diagnóstico', en: 'Check-up' },
+    tab_settings: { es: 'Ajustes', en: 'Settings' },
+    menu: { es: 'Menú', en: 'Menu' },
+    closeMenu: { es: 'Cerrar menú', en: 'Close menu' },
+    menu_home: { es: 'Inicio', en: 'Home' },
+    menu_homeMedic: { es: 'Inicio: tripulación', en: 'Home: crew' },
+    menu_person: { es: 'Ficha del tripulante', en: 'Crew member file' },
+    grp_day: { es: 'Mi día', en: 'My day' },
+    grp_team: { es: 'Equipo', en: 'Team' },
+    grp_learn: { es: 'Aprender', en: 'Learn' },
+    grp_help: { es: 'Ayuda urgente', en: 'Urgent help' },
+    grp_cfg: { es: 'Configuración', en: 'Configuration' },
+    roleTitle: { es: '¿Quién usa CrewVital hoy?', en: 'Who is using CrewVital today?' },
+    roleHint: { es: 'Puedes cambiarlo cuando quieras en Ajustes.', en: 'You can change it anytime in Settings.' },
+    role_crew: { es: 'Tripulante (astronauta)', en: 'Crew member (astronaut)' },
+    role_crew_d: { es: 'Revisa tu propio cuerpo paso a paso y sabe qué hacer ahora.', en: 'Check your own body step by step and know what to do now.' },
+    role_medic: { es: 'Médico / oficial médico', en: 'Physician / medical officer' },
+    role_medic_d: { es: 'Ve a toda la tripulación, compara valores y detecta los semáforos en rojo.', en: 'See the whole crew, compare values and spot red lights.' },
+    roleLabel: { es: 'Rol', en: 'Role' },
+    whoCrew: { es: 'Soy', en: 'I am' },
+    whoMedic: { es: 'Paciente', en: 'Patient' },
+    diagIntro: { es: 'Elige cómo quieres revisar el cuerpo. Todo ocurre en esta misma pantalla.', en: 'Choose how to check the body. Everything happens on this same screen.' },
+    dg_general: { es: 'Diagnóstico general', en: 'Full check-up' },
+    dg_general_d: { es: 'Recorre todo el cuerpo: 10 mediciones, una tras otra.', en: 'Go through the whole body: 10 measurements, one after another.' },
+    dg_specific: { es: 'Diagnóstico específico', en: 'Specific check' },
+    dg_specific_d: { es: 'Elige una parte del cuerpo y mide solo eso.', en: 'Pick one body part and measure only that.' },
+    dgProgress: { es: 'Progreso del chequeo de hoy', en: "Today's check-up progress" },
+    dgPickRegion: { es: 'Toca en el cuerpo (o en la lista) la parte que quieres revisar.', en: 'Tap the body (or the list) to choose the part you want to check.' },
+    dgTapHint: { es: 'Toca una zona del cuerpo para medirla aquí mismo.', en: 'Tap a body zone to measure it right here.' },
+    dgDone: { es: '¡Chequeo completo por hoy!', en: 'Check-up complete for today!' },
+    dgDoneRegion: { es: 'Esta zona ya está revisada hoy.', en: 'This zone is already checked today.' },
+    dgDoneHint: { es: 'Puedes repetir cualquier medición tocándola en la lista.', en: 'You can repeat any measurement by tapping it in the list.' },
+    dgZone: { es: 'Zona', en: 'Zone' },
+    dgOther: { es: 'Revisar otra zona', en: 'Check another zone' },
+    nowTitle: { es: 'Qué hacer ahora', en: 'What to do now' },
+    nowCrit: { es: 'Hay un valor en ROJO. Sigue la guía "Si algo va mal" y avisa al médico de vuelo.', en: 'There is a RED value. Follow the "If something goes wrong" guide and tell the flight surgeon.' },
+    nowCaution: { es: 'Hay valores en amarillo: repite esa medición más tarde, descansa y bebe agua.', en: 'Some values are yellow: repeat that measurement later, rest and drink water.' },
+    nowPending: { es: 'Te faltan {n} de {t} mediciones de hoy (unos 5 minutos).', en: 'You have {n} of {t} measurements left today (about 5 minutes).' },
+    nowStart: { es: 'Empezar chequeo', en: 'Start check-up' },
+    nowDone: { es: 'Ya hiciste todas las mediciones de hoy. ¡Buen trabajo!', en: 'You did all of today\'s measurements. Good job!' },
+    dayAuto: { es: 'Se calcula solo con la fecha de hoy y la fecha de inicio. No hace falta cambiarlo cada día.', en: 'It is calculated automatically from today\'s date and the start date. No need to change it every day.' },
+    setEnv: { es: 'Entorno de misión (también cambia el fondo)', en: 'Mission environment (also changes the background)' },
+    setLang: { es: 'Idioma', en: 'Language' },
+    setMission: { es: 'Misión', en: 'Mission' },
+    setCrewBtn: { es: 'Editar nombres y número de tripulantes', en: 'Edit crew names and size' },
+    medicTitle: { es: 'Vista médica: toda la tripulación', en: 'Medical view: whole crew' },
+    scnInfoIntro: { es: 'Escenarios para aprender: qué pasa, qué rangos vigilar y qué hacer. Aquí no se ingresan datos.', en: 'Scenarios to learn: what happens, which ranges to watch and what to do. No data is entered here.' },
+    scnRanges: { es: 'Rangos de referencia y qué hacer', en: 'Reference ranges and what to do' },
+    scnRangesNote: { es: 'Rangos educativos que usa la app (definidos en data.js). No sustituyen a un médico.', en: 'Educational ranges used by the app (defined in data.js). They do not replace a physician.' },
+    scnMeaning: { es: 'Qué significa estar fuera de rango', en: 'What being out of range means' },
+    scnYellowMeans: { es: 'Amarillo: el valor salió del rango normal. Vigila, repite la medición y anota cómo te sientes.', en: 'Yellow: the value left the normal range. Watch it, measure again and note how you feel.' },
+    scnRedMeans: { es: 'Rojo: el valor está lejos de lo normal y puede ser peligroso. Actúa ya y avisa.', en: 'Red: the value is far from normal and may be dangerous. Act now and tell someone.' },
+    scnInSpace: { es: 'En el espacio', en: 'In space' },
+    scnIfYellow: { es: 'Si ves amarillo, paso a paso', en: 'If you see yellow, step by step' },
+    scnIfRed: { es: 'Si ves rojo, paso a paso', en: 'If you see red, step by step' },
+    segCritLow: { es: 'Crítico bajo', en: 'Critical low' },
+    segCaut: { es: 'Precaución', en: 'Caution' },
+    segNormal: { es: 'Normal', en: 'Normal' },
+    segCritHigh: { es: 'Crítico alto', en: 'Critical high' },
+    logoTitle: { es: 'Créditos de imagen', en: 'Image credits' },
+    logoCredit: { es: 'Insignia de la NASA ("meatball"), archivo oficial publicado en Wikimedia Commons (dominio público). Su uso está sujeto a las normas de marca de la NASA; aquí se usa solo con fines educativos, sin implicar respaldo de la NASA.', en: 'NASA insignia ("meatball"), official file published on Wikimedia Commons (public domain). Its use is subject to NASA brand guidelines; it is used here for educational purposes only and does not imply NASA endorsement.' },
+    bootSkip: { es: 'Saltar intro', en: 'Skip intro' },
+    refNormal: { es: 'Rango normal', en: 'Normal range' },
     tab_scenarios: { es: 'Escenarios', en: 'Scenarios' },
     scnIntro: { es: 'Qué pasa en el cuerpo ante un evento del espacio y qué hacer, en 4 pasos. Elige un escenario.', en: 'What happens to the body during a space event and what to do, in 4 steps. Pick a scenario.' },
     scnFlow: { es: 'Cascada: evento, cuerpo, indicadores, acción', en: 'Cascade: event, body, indicators, action' },
@@ -35,7 +98,7 @@
     guideTitle: { es: 'Guía rápida: cómo leer este panel', en: 'Quick guide: how to read this panel' },
     guide1: { es: 'Cada tarjeta es una medición del cuerpo. Tócala para ver su historial y qué hacer.', en: 'Each card is a body measurement. Tap it to see its history and what to do.' },
     guide2: { es: 'Verde: todo bien. Amarillo: vigila y repite la medición. Rojo: actúa ya y avisa.', en: 'Green: all good. Yellow: watch it and measure again. Red: act now and tell someone.' },
-    guide3: { es: 'Mide cada mañana en Medir. La app compara con tus valores de siempre.', en: 'Measure every morning in Measure. The app compares with your usual values.' },
+    guide3: { es: 'Cada mañana abre Diagnóstico y sigue el chequeo general. La app compara con tus valores de siempre.', en: 'Every morning open Check-up and follow the full check-up. The app compares with your usual values.' },
     guide4: { es: 'Si alguien se siente mal de repente, pulsa EMERGENCIA (arriba a la derecha).', en: 'If someone suddenly feels unwell, press EMERGENCY (top right).' },
     guideHide: { es: 'Ocultar guía', en: 'Hide guide' },
     guideShow: { es: 'Mostrar guía rápida', en: 'Show quick guide' },
@@ -48,11 +111,11 @@
     emS3d: { es: 'Contesta sí o no. La app te dice qué hacer, en orden.', en: 'Answer yes or no. The app tells you what to do, in order.' },
     emS4: { es: 'Avisa y registra', en: 'Report and log' },
     emS4d: { es: 'Mide los signos vitales y envía el resumen a control de misión.', en: 'Measure vital signs and send the summary to mission control.' },
-    tab_emergency: { es: 'Modo emergencia', en: 'Emergency mode' },
+    tab_emergency: { es: 'Si algo va mal', en: 'If something goes wrong' },
     tab_science: { es: 'Ciencia NASA', en: 'NASA science' },
     nasaTitle: { es: 'Base de datos y evidencia NASA (obligatoria del reto)', en: 'NASA database and evidence (required by the challenge)' },
     nasaHint: { es: 'CrewVital no inventa efectos: se apoya en HRP, OSDR y CSA. Abre cada fuente para validar el modelo.', en: 'CrewVital does not invent effects: it relies on HRP, OSDR, and CSA. Open each source to validate the model.' },
-    noData: { es: 'Sin datos todavía. Registra tu primera medición en la pestaña Medir.', en: 'No data yet. Log your first measurement in the Measure tab.' },
+    noData: { es: 'Sin datos todavía. Empieza el chequeo en Diagnóstico.', en: 'No data yet. Start the check-up in Check-up.' },
     allOk: { es: 'Todo en rango. Sigue con la rutina.', en: 'Everything is in range. Keep up the routine.' },
     someCaution: { es: 'Hay indicadores en precaución. Revisa las acciones recomendadas.', en: 'Some indicators are in caution. Review the recommended actions.' },
     someCritical: { es: 'Hay indicadores CRÍTICOS. Actúa y contacta de inmediato.', en: 'There are CRITICAL indicators. Act and make contact now.' },
@@ -93,7 +156,7 @@
     caution1: { es: 'Registra y repite la medición. Contacta a {S} en la próxima comunicación programada.', en: 'Log and repeat the measurement. Contact {S} at the next scheduled communication.' },
     critical1: { es: 'Contacta de inmediato a {S}.', en: 'Contact {S} immediately.' },
     points: { es: 'puntos', en: 'points' },
-    openEm: { es: 'Abrir Modo Emergencia', en: 'Open Emergency Mode' },
+    openEm: { es: 'Ir a "Si algo va mal"', en: 'Go to "If something goes wrong"' },
     nextPending: { es: 'Siguiente medición pendiente', en: 'Next pending measurement' },
     close: { es: 'Cerrar', en: 'Close' },
     history: { es: 'Historial reciente', en: 'Recent history' },
@@ -147,9 +210,6 @@
     crewMatrix: { es: 'Ver todos los indicadores (tabla)', en: 'See all indicators (table)' },
     crewRenameHint: { es: 'Edita un nombre y sal del campo para guardarlo.', en: 'Edit a name and leave the field to save it.' },
     crewAdded: { es: 'Tripulante agregado', en: 'Crew member added' },
-    motionOn: { es: 'Fondo: estrellas en movimiento (pausar)', en: 'Background: moving stars (pause)' },
-    motionOff: { es: 'Fondo: estrellas en pausa (animar)', en: 'Background: stars paused (animate)' },
-    motionReduced: { es: 'Fondo estático (tu sistema pide reducir movimiento)', en: 'Static background (your system asks to reduce motion)' },
     ago: { es: 'hace', en: 'ago' },
     now: { es: 'ahora', en: 'just now' },
     emIntro: { es: 'Elige la situación. Los pasos se adaptan al entorno de misión seleccionado.', en: 'Choose the situation. Steps adapt to the selected mission environment.' },
@@ -202,7 +262,7 @@
   /* ---------- estado ---------- */
   function defaults() {
     return { lang: 'es', env: 'transit', missionStart: isoDate(new Date()), entries: [], seq: 0, tab: 'dashboard', sel: 'bp', region: null,
-      crew: [{ id: 'c1', name: 'Tripulante 1' }], cseq: 1, who: 'c1', em: { sc: null, node: null }, motion: true, guide: true, scn: 'solar' };
+      crew: [1, 2, 3, 4].map(function (n) { return { id: 'c' + n, name: 'Tripulante ' + n }; }), cseq: 4, who: 'c1', em: { sc: null, node: null }, guide: true, role: null, dg: { mode: null, region: null }, scn: 'solar' };
   }
   var state = load();
   var pendingImg = null;
@@ -224,7 +284,9 @@
     if (TABS.indexOf(s.tab) >= 0) d.tab = s.tab;
     if (byId(s.sel)) d.sel = s.sel;
     if (typeof s.region === 'string' && REGIONS.hasOwnProperty(s.region)) d.region = s.region;
-    if (typeof s.motion === 'boolean') d.motion = s.motion;
+    if (s.role === 'crew' || s.role === 'medic') d.role = s.role;
+    if (s.tab === 'body' || s.tab === 'measure') d.tab = 'diag';
+    if (s.dg && (s.dg.mode === 'general' || s.dg.mode === 'specific')) d.dg = { mode: s.dg.mode, region: REGIONS.hasOwnProperty(s.dg.region) ? s.dg.region : null };
     if (typeof s.guide === 'boolean') d.guide = s.guide;
     if (typeof s.scn === 'string') d.scn = s.scn;
     if (/^\d{4}-\d{2}-\d{2}$/.test(s.missionStart || '')) d.missionStart = s.missionStart;
@@ -421,28 +483,86 @@
 
   /* ---------- render: encabezado y pestanas ---------- */
   function renderHeader() {
-    var envOpts = Object.keys(ENVS).map(function (k) { return '<option value="' + k + '"' + (k === state.env ? ' selected' : '') + '>' + esc(T(ENVS[k].name)) + '</option>'; }).join('');
     var crewOpts = state.crew.map(function (c) { return '<option value="' + esc(c.id) + '"' + (c.id === state.who ? ' selected' : '') + '>' + esc(c.name) + '</option>'; }).join('');
     $('top').innerHTML =
-      '<div class="brand"><b>CrewVital</b><span>' + esc(u('tagline')) + '</span></div>' +
-      '<div class="dayinfo">' + esc(u('day')) + ' <b>' + today() + '</b></div>' +
-      '<label class="ctl">' + esc(u('who')) + '<select id="whoSel">' + crewOpts + '</select></label>' +
-      '<label class="ctl">' + esc(u('env')) + '<select id="envSel">' + envOpts + '</select></label>' +
-      '<div class="lang" role="group" aria-label="Idioma / Language"><button data-action="lang" data-v="es" aria-pressed="' + (state.lang === 'es') + '">ES</button><button data-action="lang" data-v="en" aria-pressed="' + (state.lang === 'en') + '">EN</button></div>' +
+      '<button class="burger" data-action="menu" aria-controls="drawer" aria-expanded="' + menuOpen + '" aria-label="' + esc(u('menu')) + '"><span></span><span></span><span></span></button>' +
+      '<button class="brand" data-action="tab" data-v="' + homeTab() + '" aria-label="CrewVital · ' + esc(navLabel(homeTab())) + '"><img src="nasa-logo.svg" alt="NASA" width="48" height="40"><span><b>CrewVital</b><small>' + esc(u('tagline')) + '</small></span></button>' +
+      '<div class="dayinfo" title="' + esc(u('dayAuto')) + '"><span>' + esc(u('day')) + '</span><b>' + today() + '</b></div>' +
+      '<label class="ctl who">' + esc(u(state.role === 'medic' ? 'whoMedic' : 'whoCrew')) + '<select id="whoSel">' + crewOpts + '</select></label>' +
       '<button class="sos" data-action="sos">' + esc(u('sos')) + '</button>';
     document.documentElement.lang = state.lang;
     syncTop();
   }
   function syncTop() { var h = $('top').offsetHeight; if (h) { document.documentElement.style.setProperty('--top-h', h + 'px'); } }
-  function renderTabs() {
-    $('tabs').innerHTML = TABS.map(function (t) {
-      return '<button role="tab" id="tab_' + t + '" aria-controls="main" data-action="tab" data-v="' + t + '" aria-selected="' + (state.tab === t) + '">' + esc(u('tab_' + t)) + '</button>';
-    }).join('');
-    $('main').setAttribute('aria-labelledby', 'tab_' + state.tab);
+  var NAV = {
+    crew: [['grp_day', ['dashboard', 'diag', 'routine']], ['grp_team', ['crew']], ['grp_learn', ['scenarios', 'science']], ['grp_help', ['emergency']], ['grp_cfg', ['settings']]],
+    medic: [['grp_team', ['crew', 'dashboard', 'diag']], ['grp_learn', ['scenarios', 'science']], ['grp_help', ['emergency']], ['grp_day', ['routine']], ['grp_cfg', ['settings']]]
+  };
+  function homeTab() { return state.role === 'medic' ? 'crew' : 'dashboard'; }
+  function navLabel(t) {
+    if (t === 'dashboard') return u(state.role === 'medic' ? 'menu_person' : 'menu_home');
+    if (t === 'crew' && state.role === 'medic') return u('menu_homeMedic');
+    return u('tab_' + t);
   }
-  function renderFooter() {
-    var red = typeof sky !== 'undefined' && sky.reduced && sky.reduced();
-    $('foot').innerHTML = '<p>' + esc(u('notProd')) + '</p><p class="row"><button class="btn sm" data-action="motion" aria-pressed="' + (!red && state.motion !== false) + '"' + (red ? ' disabled' : '') + '>' + esc(u(red ? 'motionReduced' : (state.motion !== false ? 'motionOn' : 'motionOff'))) + '</button></p>';
+  function renderTabs() {
+    var groups = NAV[state.role === 'medic' ? 'medic' : 'crew'];
+    $('drawer').innerHTML = '<div class="dr-head"><img src="nasa-logo.svg" alt="NASA" width="48" height="40"><b>CrewVital</b><button class="dr-close" data-action="menuClose" aria-label="' + esc(u('closeMenu')) + '">&times;</button></div>' +
+      (state.role ? '<button class="dr-role" data-action="tab" data-v="settings">' + esc(u('roleLabel')) + ': <b>' + esc(u('role_' + state.role)) + '</b></button>' : '') +
+      groups.map(function (g) {
+        return '<div class="dr-grp"><h3>' + esc(u(g[0])) + '</h3>' + g[1].map(function (t) {
+          return '<button id="nav_' + t + '" class="dr-item' + (t === 'emergency' ? ' em' : '') + '" data-action="tab" data-v="' + t + '"' + (state.tab === t ? ' aria-current="page"' : '') + '>' + esc(navLabel(t)) + '</button>';
+        }).join('') + '</div>';
+      }).join('') +
+      '<div class="lang dr-lang" role="group" aria-label="' + esc(u('setLang')) + '"><button data-action="lang" data-v="es" aria-pressed="' + (state.lang === 'es') + '">ES</button><button data-action="lang" data-v="en" aria-pressed="' + (state.lang === 'en') + '">EN</button></div>';
+    $('main').setAttribute('aria-label', state.role || state.tab === 'emergency' ? navLabel(state.tab) : u('roleTitle'));
+    setMenu(menuOpen, true);
+  }
+  var menuOpen = false;
+  function setMenu(open, quiet) {
+    menuOpen = open;
+    document.body.classList.toggle('menu-open', open);
+    var d = $('drawer'), b = document.querySelector('.burger');
+    if (open) { d.removeAttribute('inert'); } else { d.setAttribute('inert', ''); }
+    d.setAttribute('aria-hidden', String(!open));
+    if (b) b.setAttribute('aria-expanded', String(open));
+    if (quiet) return;
+    if (open) { var f = d.querySelector('[aria-current="page"]') || d.querySelector('.dr-item'); if (f) f.focus(); }
+    else if (b) { b.focus(); }
+  }
+  function renderFooter() { $('foot').innerHTML = '<p>' + esc(u('notProd')) + '</p>'; }
+  function renderRole() {
+    $('main').innerHTML = '<section class="role-pick"><h1>' + esc(u('roleTitle')) + '</h1><p class="muted">' + esc(u('roleHint')) + '</p><div class="role-cards">' +
+      ['crew', 'medic'].map(function (r) {
+        return '<button class="role-card" data-action="role" data-v="' + r + '"' + (state.role === r ? ' aria-pressed="true"' : '') + '>' + roleIcon(r) + '<b>' + esc(u('role_' + r)) + '</b><span>' + esc(u('role_' + r + '_d')) + '</span></button>';
+      }).join('') + '</div></section>';
+  }
+  function roleIcon(r) {
+    return '<svg class="role-ic" viewBox="0 0 48 48" aria-hidden="true">' + (r === 'crew'
+      ? '<circle cx="24" cy="20" r="13" fill="none" stroke-width="3"/><rect x="15" y="15" width="18" height="10" rx="5"/><path d="M10 44c1-8 6-11 14-11s13 3 14 11z"/>'
+      : '<path d="M19 6h10v13h13v10H29v13H19V29H6V19h13z"/>') + '</svg>';
+  }
+  function nowBox() {
+    var w = overall(), p = pendingToday().length;
+    var h = '<section class="now' + (w > 0 ? ' s' + w : '') + '"><h3>' + esc(u('nowTitle')) + '</h3>';
+    if (w === 2) h += '<p>' + esc(u('nowCrit')) + '</p><div class="row"><button class="btn danger" data-action="sos">' + esc(u('tab_emergency')) + '</button>' + (p ? '<button class="btn" data-action="dgStart">' + esc(u('nowStart')) + '</button>' : '') + '</div>';
+    else {
+      if (w === 1) h += '<p>' + esc(u('nowCaution')) + '</p>';
+      h += p ? '<p>' + esc(u('nowPending').replace('{n}', p).replace('{t}', IND.length)) + '</p><button class="btn primary" data-action="dgStart">' + esc(u('nowStart')) + '</button>' : '<p>' + esc(u('nowDone')) + '</p>';
+    }
+    return h + '</section>';
+  }
+  function renderSettings() {
+    var envOpts = Object.keys(ENVS).map(function (k) { return '<option value="' + k + '"' + (k === state.env ? ' selected' : '') + '>' + esc(T(ENVS[k].name)) + '</option>'; }).join('');
+    var h = '<h2>' + esc(u('tab_settings')) + '</h2><div class="grid g-2">';
+    h += '<div class="box"><label class="f">' + esc(u('setEnv')) + '<select id="envSel" class="sel">' + envOpts + '</select></label>' + envContext() + '</div>';
+    h += '<div class="box"><h3>' + esc(u('roleLabel')) + '</h3><div class="role-cards sm">' + ['crew', 'medic'].map(function (r) {
+      return '<button class="role-card" data-action="role" data-v="' + r + '" aria-pressed="' + (state.role === r) + '">' + roleIcon(r) + '<b>' + esc(u('role_' + r)) + '</b></button>';
+    }).join('') + '</div>' +
+      '<h3>' + esc(u('setLang')) + '</h3><div class="lang" role="group" aria-label="' + esc(u('setLang')) + '"><button data-action="lang" data-v="es" aria-pressed="' + (state.lang === 'es') + '">Español</button><button data-action="lang" data-v="en" aria-pressed="' + (state.lang === 'en') + '">English</button></div>' +
+      '<h3>' + esc(u('setMission')) + '</h3><p class="bigday">' + esc(u('day')) + ' <b>' + today() + '</b></p><p class="small muted">' + esc(u('dayAuto')) + '</p>' +
+      '<label class="f">' + esc(u('missionStart')) + '<input type="date" id="startDate" value="' + esc(state.missionStart) + '" max="' + minStartDate() + '"></label>' +
+      '<h3>' + esc(u('tab_crew')) + '</h3><p class="small">' + state.crew.length + ' · ' + esc(state.crew.map(function (c) { return c.name; }).join(', ')) + '</p><button class="btn" data-action="tab" data-v="crew">' + esc(u('setCrewBtn')) + '</button></div>';
+    $('main').innerHTML = h + '</div>';
   }
 
   /* ---------- render: panel ---------- */
@@ -456,7 +576,7 @@
   function renderDashboard() {
     var w = overall();
     var msg = w < 0 ? u('noData') : (w === 0 ? u('allOk') : (w === 1 ? u('someCaution') : u('someCritical')));
-    var html = '<div class="banner ' + (w < 0 ? '' : 's' + w) + '">' + (w < 0 ? '' : badge(w)) + '<b>' + esc(crewName(state.who)) + ': ' + esc(msg) + '</b></div>';
+    var html = '<div class="banner ' + (w < 0 ? '' : 's' + w) + '">' + (w < 0 ? '' : badge(w)) + '<b>' + esc(crewName(state.who)) + ': ' + esc(msg) + '</b></div>' + nowBox();
     html += state.guide !== false ?
       '<section class="guide" aria-labelledby="gT"><div class="row"><h3 id="gT">' + esc(u('guideTitle')) + '</h3><button class="btn sm" data-action="guide">' + esc(u('guideHide')) + '</button></div><ol>' +
       [1, 2, 3, 4].map(function (i) { return '<li' + (i === 2 ? ' class="g-colors"' : '') + '>' + (i === 2 ? '<span class="tl"><i class="c0"></i><i class="c1"></i><i class="c2"></i></span>' : '') + esc(u('guide' + i)) + '</li>'; }).join('') + '</ol></section>' :
@@ -537,16 +657,17 @@
   /* ---------- render: cuerpo (figura anatomica) ---------- */
   var SIL_PATH = 'M150.0 96.0C154.3 96.0 160.3 94.3 163.0 98.0C165.7 101.7 162.8 113.0 166.0 118.0C169.2 123.0 175.3 125.3 182.0 128.0C188.7 130.7 198.7 131.0 206.0 134.0C213.3 137.0 221.3 140.0 226.0 146.0C230.7 152.0 232.0 160.0 234.0 170.0C236.0 180.0 236.7 192.7 238.0 206.0C239.3 219.3 240.3 234.3 242.0 250.0C243.7 265.7 246.0 284.0 248.0 300.0C250.0 316.0 252.0 333.7 254.0 346.0C256.0 358.3 258.7 366.3 260.0 374.0C261.3 381.7 263.0 387.0 262.0 392.0C261.0 397.0 257.0 402.7 254.0 404.0C251.0 405.3 246.3 403.7 244.0 400.0C241.7 396.3 241.0 389.3 240.0 382.0C239.0 374.7 239.7 368.7 238.0 356.0C236.3 343.3 232.7 321.7 230.0 306.0C227.3 290.3 224.7 276.0 222.0 262.0C219.3 248.0 216.7 233.0 214.0 222.0C211.3 211.0 208.3 194.3 206.0 196.0C203.7 197.7 202.0 217.7 200.0 232.0C198.0 246.3 193.7 267.0 194.0 282.0C194.3 297.0 200.0 309.0 202.0 322.0C204.0 335.0 205.7 345.3 206.0 360.0C206.3 374.7 205.7 393.0 204.0 410.0C202.3 427.0 197.0 447.0 196.0 462.0C195.0 477.0 198.3 485.7 198.0 500.0C197.7 514.3 196.0 533.0 194.0 548.0C192.0 563.0 186.0 580.0 186.0 590.0C186.0 600.0 192.0 603.0 194.0 608.0C196.0 613.0 200.0 617.0 198.0 620.0C196.0 623.0 187.3 625.7 182.0 626.0C176.7 626.3 169.0 626.7 166.0 622.0C163.0 617.3 164.3 610.0 164.0 598.0C163.7 586.0 164.3 566.3 164.0 550.0C163.7 533.7 162.7 514.7 162.0 500.0C161.3 485.3 160.7 477.0 160.0 462.0C159.3 447.0 159.0 425.3 158.0 410.0C157.0 394.7 155.3 379.0 154.0 370.0C152.7 361.0 151.3 356.0 150.0 356.0C148.7 356.0 147.3 361.0 146.0 370.0C144.7 379.0 143.0 394.7 142.0 410.0C141.0 425.3 140.7 447.0 140.0 462.0C139.3 477.0 138.7 485.3 138.0 500.0C137.3 514.7 136.3 533.7 136.0 550.0C135.7 566.3 136.3 586.0 136.0 598.0C135.7 610.0 137.0 617.3 134.0 622.0C131.0 626.7 123.3 626.3 118.0 626.0C112.7 625.7 104.0 623.0 102.0 620.0C100.0 617.0 104.0 613.0 106.0 608.0C108.0 603.0 114.0 600.0 114.0 590.0C114.0 580.0 108.0 563.0 106.0 548.0C104.0 533.0 102.3 514.3 102.0 500.0C101.7 485.7 105.0 477.0 104.0 462.0C103.0 447.0 97.7 427.0 96.0 410.0C94.3 393.0 93.7 374.7 94.0 360.0C94.3 345.3 96.0 335.0 98.0 322.0C100.0 309.0 105.7 297.0 106.0 282.0C106.3 267.0 102.0 246.3 100.0 232.0C98.0 217.7 96.3 197.7 94.0 196.0C91.7 194.3 88.7 211.0 86.0 222.0C83.3 233.0 80.7 248.0 78.0 262.0C75.3 276.0 72.7 290.3 70.0 306.0C67.3 321.7 63.7 343.3 62.0 356.0C60.3 368.7 61.0 374.7 60.0 382.0C59.0 389.3 58.3 396.3 56.0 400.0C53.7 403.7 49.0 405.3 46.0 404.0C43.0 402.7 39.0 397.0 38.0 392.0C37.0 387.0 38.7 381.7 40.0 374.0C41.3 366.3 44.0 358.3 46.0 346.0C48.0 333.7 50.0 316.0 52.0 300.0C54.0 284.0 56.3 265.7 58.0 250.0C59.7 234.3 60.7 219.3 62.0 206.0C63.3 192.7 64.0 180.0 66.0 170.0C68.0 160.0 69.3 152.0 74.0 146.0C78.7 140.0 86.7 137.0 94.0 134.0C101.3 131.0 111.3 130.7 118.0 128.0C124.7 125.3 130.8 123.0 134.0 118.0C137.2 113.0 134.3 101.7 137.0 98.0C139.7 94.3 145.7 96.0 150.0 96.0Z';
   function mirror(d) { return d.replace(/([MLC ])(-?[\d.]+) (-?[\d.]+)/g, function (m, c, x, y) { return c + (300 - x) + ' ' + y; }); }
-  function bodySvg() {
+  function bodySvg(action) {
+    action = action || 'dgRegion';
     var compact = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
     function col(r) { var s = regionState(r); return s < 0 ? '#7a8db3' : STATES.color[s]; }
     function hot(r, shapes) {
       var s = regionState(r);
-      return '<g class="hot anat' + (s >= 0 ? ' s' + s : '') + (state.region === r ? ' sel' : '') + '" data-action="region" data-v="' + r + '" role="button" tabindex="0" aria-pressed="' + (state.region === r) + '" aria-label="' + esc(T(REGIONS[r].name) + ': ' + (s < 0 ? u('notMeasured') : STATES.label[state.lang][s])) + '" style="--c:' + col(r) + '">' + shapes + '</g>';
+      return '<g class="hot anat' + (s >= 0 ? ' s' + s : '') + (state.region === r ? ' sel' : '') + '" data-action="' + action + '" data-v="' + r + '" role="button" tabindex="0" aria-pressed="' + (state.region === r) + '" aria-label="' + esc(T(REGIONS[r].name) + ': ' + (s < 0 ? u('notMeasured') : STATES.label[state.lang][s])) + '" style="--c:' + col(r) + '">' + shapes + '</g>';
     }
     function lbl(r, ax, ay, side, y) {
       var s = regionState(r), x = side < 0 ? -102 : 402, lx = side < 0 ? -12 : 312;
-      return '<g class="hot lbl" data-action="region" data-v="' + r + '" aria-hidden="true" style="--c:' + col(r) + '"><path class="lead" d="M' + ax + ' ' + ay + 'L' + lx + ' ' + y + 'L' + (side < 0 ? -102 : 402) + ' ' + y + '"/><circle class="dot" cx="' + ax + '" cy="' + ay + '" r="3"/>' +
+      return '<g class="hot lbl" data-action="' + action + '" data-v="' + r + '" aria-hidden="true" style="--c:' + col(r) + '"><path class="lead" d="M' + ax + ' ' + ay + 'L' + lx + ' ' + y + 'L' + (side < 0 ? -102 : 402) + ' ' + y + '"/><circle class="dot" cx="' + ax + '" cy="' + ay + '" r="3"/>' +
         '<text x="' + x + '" y="' + (y - 6) + '" text-anchor="' + (side < 0 ? 'start' : 'end') + '">' + esc(T(REGIONS[r].name)) + '</text><text class="st" x="' + x + '" y="' + (y + 13) + '" text-anchor="' + (side < 0 ? 'start' : 'end') + '">' + esc(s < 0 ? u('notMeasured') : STATES.label[state.lang][s]) + '</text></g>';
     }
     var lungR = 'M146 150C130 146 118 160 116 190C114 215 118 232 124 236C134 236 144 230 146 222Z';
@@ -575,62 +696,80 @@
     }
     return s + '</svg>';
   }
-  function renderBody() {
-    var r = state.region, panel;
-    if (!r) { panel = '<div class="box"><p>' + esc(u('bodyHint')) + '</p></div>'; }
-    else {
-      var R = REGIONS[r];
-      panel = '<div class="box"><h2>' + esc(T(R.name)) + ' ' + badge(regionState(r)) + '</h2>' +
-        '<h3>' + esc(u('fn')) + '</h3><p>' + esc(T(R.fn)) + '</p>' +
-        '<h3>' + esc(u('risk')) + '</h3><p>' + esc(T(R.risk)) + '</p>' +
-        '<h3>' + esc(u('hazards')) + '</h3><div class="chips">' + R.hazards.map(function (h) { return '<span class="chip on">' + esc(T(HAZARDS[h])) + '</span>'; }).join('') + '</div>' +
-        '<h3>' + esc(u('indicators')) + '</h3>' +
-        R.inds.map(function (id) {
-          var ind = byId(id), l = latest(id);
-          return '<div class="row" style="margin-bottom:.5rem"><span style="min-width:11rem"><b>' + esc(T(ind.name)) + '</b></span>' + (l ? '<span>' + esc(valueText(l)) + '</span>' : '') + badge(l ? l.state : -1) +
-            '<button class="btn sm" data-action="open" data-v="' + id + '">' + esc(u('detail')) + '</button><button class="btn sm primary" data-action="measureInd" data-v="' + id + '">' + esc(u('measureNow')) + '</button></div>';
-        }).join('') + '</div>';
-    }
-    var legend = '<div class="legend">' + Object.keys(REGIONS).map(function (k) {
-      return '<button class="btn sm" data-action="region" data-v="' + k + '" aria-pressed="' + (state.region === k) + '">' + esc(T(REGIONS[k].name)) + ' ' + badge(regionState(k)) + '</button>';
-    }).join('') + '</div>';
-    $('main').innerHTML = '<div class="fig-wrap anat-wrap"><div>' + bodySvg() + legend + '</div><div>' + panel + '</div></div>';
-  }
-
   /* ---------- render: medir ---------- */
-  function renderMeasure() {
-    var ind = byId(state.sel) || IND[0], t = today();
-    var h = '<h2>' + esc(u('pickInd')) + ' · ' + esc(crewName(state.who)) + '</h2><div class="pick">' + IND.map(function (i) {
-      return '<button data-action="sel" data-v="' + i.id + '" aria-pressed="' + (i.id === ind.id) + '" class="' + (hasEntry(i.id, t) ? 'done' : '') + '">' + esc(T(i.name)) + '</button>';
-    }).join('') + '</div><div class="grid g-2"><div class="box">';
-    h += '<h3>' + esc(u('howTo')) + '</h3><ol class="steps">' + T(ind.steps).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol>';
-    h += '<h3>' + esc(u('why')) + '</h3><p>' + esc(T(ind.why)) + '</p>';
-    h += '<h3>' + esc(u('spaceEffect')) + '</h3><p>' + esc(T(ind.space)) + '</p>';
-    h += '<div class="chips">' + ind.hazards.map(function (x) { return '<span class="chip on">' + esc(T(HAZARDS[x])) + '</span>'; }).join('') + '</div></div>';
-    h += '<form class="box" id="mform" novalidate><h3>' + esc(T(ind.name)) + '</h3><p class="small muted">' + esc(u('manualNote')) + '</p>';
+  /* ---------- render: diagnostico (general / especifico) ---------- */
+  var ORDER = Object.keys(REGIONS).reduce(function (a, r) { return a.concat(REGIONS[r].inds); }, []);
+  function dgSeq() { return state.dg.mode === 'general' ? ORDER : (state.dg.region ? REGIONS[state.dg.region].inds : []); }
+  function firstPending(seq) { var t = today(); for (var i = 0; i < seq.length; i++) if (!hasEntry(seq[i], t)) return seq[i]; return null; }
+  function dgCurrent(seq) { return seq.indexOf(state.sel) >= 0 ? state.sel : (firstPending(seq) || seq[0]); }
+  function dgNext(seq, cur) {
+    var t = today(), i = seq.indexOf(cur);
+    for (var k = 1; k < seq.length; k++) { var id = seq[(i + k) % seq.length]; if (!hasEntry(id, t)) return id; }
+    return null;
+  }
+  function measureForm(ind) {
+    var h = '<form class="box dg-form" id="mform" novalidate><p class="small muted">' + esc(u('dgZone')) + ': ' + esc(T(REGIONS[ind.region].name)) + '</p><h3>' + esc(T(ind.name)) + '</h3>';
+    h += '<details class="howto"><summary>' + esc(u('howTo')) + '</summary><ol class="steps">' + T(ind.steps).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol><p class="small"><b>' + esc(u('why')) + ':</b> ' + esc(T(ind.why)) + '</p></details>';
     ind.fields.forEach(function (f) {
       if (ind.id === 'mood') {
         h += '<p class="small">' + esc(T(f.label)) + '</p><div class="moods" id="moods">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" data-action="mood" data-v="' + n + '" aria-pressed="false">' + n + '</button>'; }).join('') + '</div><input type="hidden" name="' + f.key + '" id="f_' + f.key + '">';
       } else {
-        h += '<label class="f">' + esc(T(f.label)) + ' (' + esc(f.unit) + ')<input type="number" inputmode="decimal" name="' + f.key + '" id="f_' + f.key + '" min="' + f.min + '" max="' + f.max + '" step="' + f.step + '"></label>';
+        h += '<label class="f">' + esc(T(f.label)) + ' (' + esc(f.unit) + ')<input type="number" inputmode="decimal" name="' + f.key + '" id="f_' + f.key + '" min="' + f.min + '" max="' + f.max + '" step="' + f.step + '"><span class="small muted">' + esc(u('refNormal')) + ': ' + esc(rangeText(f)) + '</span></label>';
       }
     });
-    h += '<label class="f">' + esc(u('attach')) + '<input type="file" id="img" accept="image/*"></label><div id="imgPrev"></div><p class="small muted">' + esc(u('attachNote')) + '</p>';
-    h += '<p id="merr" class="small" style="color:var(--bad)" role="alert"></p><button type="submit" class="btn primary">' + esc(u('save')) + '</button></form></div>';
-    if (lastResult && lastResult.e.ind === ind.id) { h += resultHtml(lastResult); }
-    $('main').innerHTML = h;
+    h += '<details><summary class="small">' + esc(u('attach')) + '</summary><label class="f"><input type="file" id="img" accept="image/*"></label><div id="imgPrev"></div><p class="small muted">' + esc(u('attachNote')) + '</p></details>';
+    return h + '<p id="merr" class="small" style="color:var(--bad)" role="alert"></p><button type="submit" class="btn primary big">' + esc(u('save')) + '</button></form>';
   }
-  function resultHtml(res) {
-    var e = res.e, ind = byId(e.ind);
-    var h = '<div class="result s' + e.state + '" id="result"><h2>' + esc(u('result')) + ': ' + esc(T(ind.name)) + ' ' + badge(e.state) + '</h2><p class="stat">' + esc(valueText(e)) + '</p>';
+  function dgResult(res, seq) {
+    var e = res.e, ind = byId(e.ind), next = dgNext(seq, e.ind);
+    var h = '<div class="result s' + e.state + '" id="result" tabindex="-1"><h3>' + esc(T(ind.name)) + ' ' + badge(e.state) + '</h3><p class="stat">' + esc(valueText(e)) + '</p>';
     h += '<h3>' + esc(u('whatToDo')) + '</h3>' + actionsHtml(ind, e.state);
     if (res.first) { h += '<p class="small muted">+10 ' + esc(u('points')) + '</p>'; }
     h += '<div class="row">';
     if (e.state === 2) { h += '<button class="btn danger" data-action="sos">' + esc(u('openEm')) + '</button>'; }
-    var next = pendingToday()[0];
-    if (next) { h += '<button class="btn primary" data-action="measureInd" data-v="' + next.id + '">' + esc(u('nextPending')) + ': ' + esc(T(next.name)) + '</button>'; }
-    h += '<button class="btn" data-action="tab" data-v="dashboard">' + esc(u('tab_dashboard')) + '</button></div></div>';
-    return h;
+    if (next) { h += '<button class="btn primary" data-action="dgInd" data-v="' + next + '">' + esc(u('nextPending')) + ': ' + esc(T(byId(next).name)) + ' &rarr;</button>'; }
+    else { h += '<b class="dg-fin">' + esc(u(state.dg.mode === 'general' ? 'dgDone' : 'dgDoneRegion')) + '</b>'; }
+    if (state.dg.mode === 'specific') { h += '<button class="btn" data-action="dgMode" data-v="specific">' + esc(u('dgOther')) + '</button>'; }
+    return h + '</div></div>';
+  }
+  function renderDiag() {
+    var dg = state.dg, t = today();
+    var h = '<h2>' + esc(u('tab_diag')) + ' · ' + esc(crewName(state.who)) + '</h2>' + (dg.mode ? '' : '<p class="muted">' + esc(u('diagIntro')) + '</p>');
+    h += '<div class="dg-modes' + (dg.mode ? ' compact' : '') + '" role="group" aria-label="' + esc(u('tab_diag')) + '">' + ['general', 'specific'].map(function (m, i) {
+      return '<button class="dg-mode" data-action="dgMode" data-v="' + m + '" aria-pressed="' + (dg.mode === m) + '"><span class="dg-letter" aria-hidden="true">' + 'AB'[i] + '</span><b>' + esc(u('dg_' + m)) + '</b><span class="small">' + esc(u('dg_' + m + '_d')) + '</span></button>';
+    }).join('') + '</div>';
+    if (!dg.mode) { $('main').innerHTML = h; return; }
+    var seq = dgSeq(), cur = seq.length ? dgCurrent(seq) : null;
+    if (cur) state.sel = cur;
+    state.region = cur ? byId(cur).region : dg.region;
+    if (seq.length) {
+      var done = seq.filter(function (id) { return hasEntry(id, t); }).length;
+      h += '<div class="dg-prog"><div class="row" style="justify-content:space-between"><b>' + esc(u('dgProgress')) + (dg.mode === 'specific' ? ' · ' + esc(T(REGIONS[dg.region].name)) : '') + '</b><span class="stat-sm">' + done + '/' + seq.length + '</span></div>' +
+        '<div class="bar" role="progressbar" aria-label="' + esc(u('dgProgress')) + '" aria-valuemin="0" aria-valuemax="' + seq.length + '" aria-valuenow="' + done + '"><i style="width:' + Math.round(100 * done / seq.length) + '%"></i></div></div>';
+    }
+    var legend = '<div class="legend">' + Object.keys(REGIONS).map(function (k) {
+      return '<button class="btn sm" data-action="dgRegion" data-v="' + k + '" aria-pressed="' + (state.region === k) + '">' + esc(T(REGIONS[k].name)) + ' ' + badge(regionState(k)) + '</button>';
+    }).join('') + '</div>';
+    var panel;
+    if (!cur) { panel = '<div class="box dg-hint"><p>' + esc(u('dgPickRegion')) + '</p></div>'; }
+    else {
+      panel = '<ol class="dg-steps">' + seq.map(function (id) {
+        var l = latest(id), ok = hasEntry(id, t);
+        return '<li><button data-action="dgInd" data-v="' + id + '" class="' + (ok ? 'done' : '') + (id === cur ? ' on' : '') + '"' + (id === cur ? ' aria-current="step"' : '') + '><span class="ck" aria-hidden="true">' + (ok ? '&#10003;' : '') + '</span>' + esc(T(byId(id).name)) + (ok && l ? ' ' + badge(l.state) : '') + '</button></li>';
+      }).join('') + '</ol>';
+      if (lastResult && lastResult.e.ind === cur) panel += dgResult(lastResult, seq);
+      else {
+        if (!firstPending(seq)) panel += '<div class="result s0"><h3>' + esc(u(dg.mode === 'general' ? 'dgDone' : 'dgDoneRegion')) + '</h3><p class="small">' + esc(u('dgDoneHint')) + '</p></div>';
+        panel += measureForm(byId(cur));
+      }
+    }
+    h += '<p class="small muted">' + esc(u(dg.mode === 'specific' && !dg.region ? 'dgPickRegion' : 'dgTapHint')) + '</p>';
+    h += '<div class="fig-wrap anat-wrap dg-wrap"><div>' + bodySvg('dgRegion') + legend + '</div><div id="dgPanel">' + panel + '</div></div>';
+    $('main').innerHTML = h;
+  }
+  function dgFocusPanel() {
+    var p = $('result') || $('dgPanel');
+    if (p && window.innerWidth <= 860 && p.scrollIntoView) { p.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   }
   function submitMeasure(ev) {
     ev.preventDefault();
@@ -644,8 +783,7 @@
     var first = !hasEntry(ind.id, today());
     var e = addEntry(ind.id, values, pendingImg);
     pendingImg = null; lastResult = { e: e, first: first };
-    renderHeader(); renderMeasure();
-    var r = $('result'); if (r && r.scrollIntoView) { r.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    renderHeader(); renderDiag(); dgFocusPanel();
     if (e.state === 2) { toast(STATES.label[state.lang][2] + ': ' + T(ind.name)); }
   }
   function handleImage(file) {
@@ -741,18 +879,18 @@
       '<div class="bar" role="progressbar" aria-label="' + esc(u('todayRoutine')) + '" aria-valuemin="0" aria-valuemax="' + IND.length + '" aria-valuenow="' + r.done + '"><i style="width:' + pct + '%"></i></div></div>';
     h += '<div class="row crew-act">' + (on ? '<span class="chip on">' + esc(u('active')) + '</span><button class="btn sm" data-action="tab" data-v="dashboard">' + esc(u('openPanel')) + '</button>'
       : '<button class="btn sm primary" data-action="viewCrew" data-v="' + esc(r.c.id) + '" aria-label="' + esc(u('openPanel') + ': ' + r.c.name) + '">' + esc(u('openPanel')) + '</button>') +
-      '<button class="btn sm" data-action="crewMeasure" data-v="' + esc(r.c.id) + '">' + esc(u('tab_measure')) + '</button></div>';
+      '<button class="btn sm" data-action="crewMeasure" data-v="' + esc(r.c.id) + '">' + esc(u('tab_diag')) + '</button></div>';
     return h + '</article>';
   }
   function renderCrew() {
     var rows = crewRows(), n = { '-1': 0, 0: 0, 1: 0, 2: 0 };
     rows.forEach(function (r) { n[r.w]++; });
-    var h = '<h2>' + esc(u('crewTitle')) + '</h2><p class="small muted">' + esc(u('crewHint')) + '</p>';
+    var h = '<h2>' + esc(u(state.role === 'medic' ? 'medicTitle' : 'crewTitle')) + '</h2><p class="small muted">' + esc(u('crewHint')) + '</p>';
     h += '<div class="crew-sum" role="list">' + [2, 1, 0, -1].map(function (s) {
       return '<div class="crew-stat' + (s < 0 ? '' : ' s' + s) + (n[s] ? '' : ' zero') + '" role="listitem"><span class="stat">' + n[s] + '</span>' + badge(s) + '</div>';
     }).join('') + '</div>';
     h += '<div class="grid crew-grid">' + rows.map(crewCard).join('') + '</div>';
-    h += '<details class="box crew-matrix"><summary>' + esc(u('crewMatrix')) + '</summary><div class="scroll"><table><caption class="sr">' + esc(u('crewMatrix')) + '</caption><tr><th scope="col">' + esc(u('who')) + '</th><th scope="col">' + esc(u('status')) + '</th>' +
+    h += '<details class="box crew-matrix"' + (state.role === 'medic' ? ' open' : '') + '><summary>' + esc(u('crewMatrix')) + '</summary><div class="scroll"><table><caption class="sr">' + esc(u('crewMatrix')) + '</caption><tr><th scope="col">' + esc(u('who')) + '</th><th scope="col">' + esc(u('status')) + '</th>' +
       IND.map(function (i) { return '<th scope="col">' + esc(T(i.name)) + '</th>'; }).join('') + '</tr>';
     rows.forEach(function (r) {
       h += '<tr><th scope="row">' + esc(r.c.name) + '</th><td>' + badge(r.w) + '</td>';
@@ -812,41 +950,51 @@
     return SCENARIOS[0];
   }
   function hzIcon(h) { return '<svg class="hz-ic" viewBox="0 0 24 24" aria-hidden="true">' + (HZ_ICON[h] || '') + '</svg>'; }
+  function rangeBar(f) {
+    var segs = [], lowStart = f.critMin >= f.min ? f.critMin : f.min;
+    if (f.critMin >= f.min) segs.push([2, 'segCritLow', '< ' + fmt(f, f.critMin)]);
+    if (f.normalMin > lowStart) { var le = Number((f.normalMin - f.step).toFixed(dec(f.step))); segs.push([1, 'segCaut', lowStart === le ? fmt(f, le) : fmt(f, lowStart) + '–' + fmt(f, le)]); }
+    segs.push([0, 'segNormal', f.open ? fmt(f, f.normalMin) + '+' : fmt(f, f.normalMin) + '–' + fmt(f, f.normalMax)]);
+    if (!f.open && f.normalMax < f.max) { var hs = Number((f.normalMax + f.step).toFixed(dec(f.step))); segs.push([1, 'segCaut', fmt(f, hs) + '–' + fmt(f, f.critMax < f.max ? f.critMax : f.max)]); }
+    if (f.critMax < f.max) segs.push([2, 'segCritHigh', '> ' + fmt(f, f.critMax)]);
+    return '<div class="rbar" role="list" aria-label="' + esc(T(f.label)) + '">' + segs.map(function (s) {
+      return '<div class="rseg r' + s[0] + '" role="listitem"><span>' + esc(u(s[1])) + '</span><b>' + esc(s[2]) + '</b></div>';
+    }).join('') + '</div><p class="small muted rbar-u">' + esc(T(f.label)) + ' · ' + esc(f.unit) + '</p>';
+  }
   function renderScenarios() {
     var sc = scnById(state.scn);
-    var h = '<h2>' + esc(u('tab_scenarios')) + '</h2><p class="muted">' + esc(u('scnIntro')) + '</p><div class="scn-pick">';
+    var h = '<h2>' + esc(u('tab_scenarios')) + '</h2><p class="muted">' + esc(u('scnInfoIntro')) + '</p><div class="scn-pick">';
     SCENARIOS.forEach(function (x) {
       h += '<button data-action="scn" data-v="' + x.id + '" aria-pressed="' + (x.id === sc.id) + '">' + hzIcon(x.hz) + '<span>' + esc(T(x.title)) + '</span></button>';
     });
+    var inds = Object.keys(sc.demo);
     h += '</div><ol class="flow" aria-label="' + esc(u('scnFlow')) + '">';
     h += '<li class="node n-event"><span class="step">1 · ' + esc(u('scnEvent')) + '</span>' + hzIcon(sc.hz) + '<h3>' + esc(T(sc.title)) + '</h3><p>' + esc(T(sc.event)) + '</p>' +
-      '<p class="small"><span class="chip on">' + esc(T(HAZARDS[sc.hz])) + '</span></p><p class="small muted"><b>' + esc(u('scnLong')) + ':</b> ' + esc(T(HAZARD_INFO[sc.hz])) + '</p>' +
-      '<p class="small muted"><b>' + esc(u('delay')) + ':</b> ' + esc(T(ENVS[state.env].delay)) + '</p></li>';
+      '<p class="small"><span class="chip on">' + esc(T(HAZARDS[sc.hz])) + '</span></p><p class="small muted"><b>' + esc(u('scnLong')) + ':</b> ' + esc(T(HAZARD_INFO[sc.hz])) + '</p></li>';
     h += '<li class="node n-body"><span class="step">2 · ' + esc(u('scnBody')) + '</span><div class="scn-regions">' + sc.regions.map(function (r) {
-      var s = regionState(r);
-      return '<button class="reg" data-action="regionGo" data-v="' + r + '" style="--c:' + (s < 0 ? '#7a8db3' : STATES.color[s]) + '"><span class="dotc"></span>' + esc(T(REGIONS[r].name)) + ' ' + badge(s) + '</button>';
+      return '<div class="reg"><b>' + esc(T(REGIONS[r].name)) + '</b><span class="small muted">' + esc(T(REGIONS[r].risk)) + '</span></div>';
     }).join('') + '</div></li>';
-    h += '<li class="node n-ind"><span class="step">3 · ' + esc(u('scnInd')) + '</span>' + Object.keys(sc.demo).map(function (id) {
-      var ind = byId(id), l = latest(id), s = l ? l.state : -1;
-      return '<button class="ind-row s' + s + '" data-action="open" data-v="' + id + '"><b>' + esc(T(ind.name)) + '</b><span>' + (l ? esc(valueText(l)) : '-') + '</span>' + badge(s) + '</button>';
-    }).join('') + '<p class="small muted">' + esc(u('scnIndHint')) + '</p></li>';
+    h += '<li class="node n-ind"><span class="step">3 · ' + esc(u('scnInd')) + '</span>' + inds.map(function (id) {
+      var ind = byId(id), f = ind.fields.filter(function (x) { return x.key === ind.primary; })[0] || ind.fields[0];
+      return '<a class="ind-row" href="#rg_' + id + '"><b>' + esc(T(ind.name)) + '</b><span class="small">' + esc(u('refNormal')) + ': ' + esc(rangeText(f)) + '</span></a>';
+    }).join('') + '</li>';
     h += '<li class="node n-act"><span class="step">4 · ' + esc(u('scnAct')) + '</span><ol class="steps">' + T(sc.act).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol>' +
-      '<div class="row"><button class="btn primary" data-action="scnDemo" data-v="' + sc.id + '">' + esc(u('scnDemo')) + '</button>' +
-      '<button class="btn danger" data-action="scnEm" data-v="' + sc.em + '">' + esc(u('scnGoEm')) + ': ' + esc(T(EMERGENCY[sc.em].title)) + '</button></div>' +
-      '<p class="small muted">' + esc(u('scnDemoHint')) + '</p></li></ol>';
-    h += '<div class="box scn-src"><h3>' + esc(u('scnSources')) + '</h3><ul class="small">';
+      '<button class="btn danger" data-action="scnEm" data-v="' + sc.em + '">' + esc(u('tab_emergency')) + ': ' + esc(T(EMERGENCY[sc.em].title)) + '</button></li></ol>';
+    h += '<h3>' + esc(u('scnRanges')) + '</h3><p class="small muted">' + esc(u('scnRangesNote')) + '</p><div class="legend-tl small"><span class="r0">' + esc(u('segNormal')) + '</span><span class="r1">' + esc(u('scnYellowMeans')) + '</span><span class="r2">' + esc(u('scnRedMeans')) + '</span></div><div class="grid g-2 rg-grid">';
+    inds.forEach(function (id) {
+      var ind = byId(id);
+      h += '<article class="box rg-card" id="rg_' + id + '"><h3>' + esc(T(ind.name)) + '</h3>' + ind.fields.map(rangeBar).join('') +
+        '<h4>' + esc(u('scnMeaning')) + '</h4><p class="small"><b>' + esc(u('scnInSpace')) + ':</b> ' + esc(T(ind.space)) + '</p>' +
+        '<details><summary class="t1">' + esc(u('scnIfYellow')) + '</summary>' + actionsHtml(ind, 1) + '</details>' +
+        '<details><summary class="t2">' + esc(u('scnIfRed')) + '</summary>' + actionsHtml(ind, 2) + '<button class="btn sm danger" data-action="scnEm" data-v="' + sc.em + '">' + esc(u('tab_emergency')) + '</button></details></article>';
+    });
+    h += '</div><div class="box scn-src"><h3>' + esc(u('scnSources')) + '</h3><ul class="small">';
     (sc.evidence || []).forEach(function (eid) {
       var ev = evidenceById(eid);
       if (!ev) return;
       h += '<li><span class="chip on">' + esc(ev.kind) + '</span> <a href="' + esc(ev.u) + '" target="_blank" rel="noopener">' + esc(T(ev.title)) + '</a><br><span class="muted">' + esc(T(ev.finding)) + '</span></li>';
     });
-    h += '</ul></div>';
-    $('main').innerHTML = h;
-  }
-  function loadDemo(sc) {
-    Object.keys(sc.demo).forEach(function (id) { var e = addEntry(id, sc.demo[id]); if (e) e.source = 'demo'; });
-    var ok = save(); render();
-    if (ok) toast(u('demoLoaded') + ': ' + T(sc.title));
+    $('main').innerHTML = h + '</ul></div>';
   }
   function renderEmergency() {
     var cur = !state.em.sc || !EMERGENCY[state.em.sc] ? 2 : (EMERGENCY[state.em.sc].nodes && EMERGENCY[state.em.sc].nodes[state.em.node || EMERGENCY[state.em.sc].start].q ? 3 : 4);
@@ -897,6 +1045,7 @@
     h += '<div class="box" style="margin-top:.8rem"><h2>' + esc(u('qTitle')) + '</h2>' + QUESTIONS.map(function (q) {
       return '<p><b>' + esc(T(q.q)) + '</b><br>' + esc(T(q.a)) + ' <button class="btn sm" data-action="tab" data-v="' + q.tab + '">' + esc(u('where')) + ': ' + esc(u('tab_' + q.tab)) + '</button></p>';
     }).join('') + '</div>';
+    h += '<div class="box" style="margin-top:.8rem"><h2>' + esc(u('logoTitle')) + '</h2><p class="row"><img src="nasa-logo.svg" alt="NASA" width="66" height="55"><span class="small">' + esc(u('logoCredit')) + '</span></p><ul class="small"><li><a href="https://commons.wikimedia.org/wiki/File:NASA_logo.svg" target="_blank" rel="noopener">Wikimedia Commons · File:NASA_logo.svg</a></li><li><a href="https://www.nasa.gov/nasa-brand-center/images-and-media/" target="_blank" rel="noopener">NASA Brand Center · Images and media guidelines</a></li></ul></div>';
     h += '<div class="box" style="margin-top:.8rem"><h2>' + esc(u('dualTitle')) + '</h2><p>' + esc(u('dualText')) + '</p><button class="btn primary" data-action="earth">' + esc(u('dualBtn')) + '</button></div>';
     h += '<div class="box" style="margin-top:.8rem"><h2>' + esc(u('thrTitle')) + '</h2><p class="small muted">' + esc(u('thrNote')) + '</p><div class="scroll"><table><tr><th>' + esc(u('ind')) + '</th><th>' + esc(u('normalRange')) + '</th><th>' + esc(u('caut')) + '</th><th>' + esc(u('crit')) + '</th><th>' + esc(u('src')) + '</th></tr>';
     IND.forEach(function (ind) {
@@ -914,16 +1063,25 @@
   function render() {
     refresh();
     renderHeader(); renderTabs(); renderFooter();
-    if (state.tab === 'dashboard') renderDashboard();
-    else if (state.tab === 'body') renderBody();
-    else if (state.tab === 'scenarios') renderScenarios();
-    else if (state.tab === 'measure') renderMeasure();
-    else if (state.tab === 'routine') renderRoutine();
-    else if (state.tab === 'crew') renderCrew();
-    else if (state.tab === 'emergency') renderEmergency();
+    if (typeof sky !== 'undefined' && sky) sky.set(state.env);
+    if (!state.role && state.tab !== 'emergency') { renderRole(); return; }
+    var t = state.tab;
+    if (t === 'dashboard') renderDashboard();
+    else if (t === 'diag') renderDiag();
+    else if (t === 'scenarios') renderScenarios();
+    else if (t === 'routine') renderRoutine();
+    else if (t === 'crew') renderCrew();
+    else if (t === 'emergency') renderEmergency();
+    else if (t === 'settings') renderSettings();
     else renderScience();
   }
-  function go(tab) { state.tab = tab; save(); render(); window.scrollTo(0, 0); }
+  function go(tab) {
+    if (tab === 'body' || tab === 'measure') tab = 'diag';
+    state.tab = tab; save();
+    if (menuOpen) setMenu(false, true);
+    render(); window.scrollTo(0, 0);
+    if ($('main').focus) $('main').focus({ preventScroll: true });
+  }
 
   /* ---------- eventos ---------- */
   function onAction(el) {
@@ -931,18 +1089,24 @@
     switch (a) {
       case 'tab': closeDlg(); go(v); break;
       case 'lang': state.lang = v; save(); render(); break;
-      case 'motion': state.motion = state.motion === false; save(); renderFooter(); sky.sync(); break;
+      case 'menu': setMenu(!menuOpen); break;
+      case 'menuClose': setMenu(false); break;
+      case 'role': state.role = v; state.tab = homeTab(); save(); render(); window.scrollTo(0, 0); break;
+      case 'dgStart': state.dg = { mode: 'general', region: null }; state.sel = null; lastResult = null; go('diag'); break;
+      case 'dgMode': state.dg = { mode: v, region: null }; state.sel = null; lastResult = null; save(); renderDiag(); break;
+      case 'dgRegion':
+        if (state.dg.mode !== 'general') state.dg = { mode: 'specific', region: v };
+        state.sel = firstPending(REGIONS[v].inds) || REGIONS[v].inds[0]; lastResult = null; save(); renderDiag(); dgFocusPanel(); break;
+      case 'dgInd': state.sel = v; lastResult = null; save(); renderDiag(); dgFocusPanel(); break;
       case 'sos': closeDlg(); state.em = { sc: null, node: null }; go('emergency'); break;
       case 'open': openDetail(v); break;
       case 'closeDlg': closeDlg(); break;
-      case 'measureInd': closeDlg(); state.sel = v; lastResult = null; go('measure'); break;
-      case 'sel': state.sel = v; lastResult = null; save(); renderMeasure(); break;
-      case 'region': state.region = v; save(); renderBody(); break;
+      case 'measureInd': closeDlg(); state.dg = { mode: 'specific', region: byId(v).region }; state.sel = v; lastResult = null; go('diag'); break;
       case 'mood': $('f_mood').value = v; Array.prototype.forEach.call(document.querySelectorAll('#moods button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-v') === v)); }); break;
       case 'csv': exportCsv(); break;
       case 'reset': if (window.confirm(u('resetConfirm'))) { var lang = state.lang; state = defaults(); state.lang = lang; lastResult = null; save(); render(); } break;
       case 'viewCrew': state.who = v; lastResult = null; go('dashboard'); break;
-      case 'crewMeasure': state.who = v; lastResult = null; go('measure'); break;
+      case 'crewMeasure': state.who = v; state.dg = { mode: 'general', region: null }; state.sel = null; lastResult = null; go('diag'); break;
       case 'delCrew':
         if (state.crew.length > 1 && window.confirm(u('removeConfirm'))) {
           state.crew = state.crew.filter(function (c) { return c.id !== v; });
@@ -953,9 +1117,7 @@
       case 'emSc': state.em = { sc: v, node: null }; renderEmergency(); break;
       case 'emAns': state.em.node = v; renderEmergency(); break;
       case 'scn': state.scn = v; save(); renderScenarios(); break;
-      case 'scnDemo': loadDemo(scnById(v)); break;
       case 'scnEm': state.em = { sc: v, node: null }; go('emergency'); break;
-      case 'regionGo': state.region = v; go('body'); break;
       case 'guide': state.guide = !state.guide; save(); renderDashboard(); break;
       case 'copy': (function () { var t = $('sum'); t.select(); var done = function () { toast(u('copied')); }; if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t.value).then(done, function () { document.execCommand('copy'); done(); }); } else { document.execCommand('copy'); done(); } })(); break;
       case 'earth': state.env = 'earth'; save(); go('dashboard'); break;
@@ -968,7 +1130,8 @@
   });
   document.addEventListener('keydown', function (ev) {
     var t = ev.target;
-    if ((ev.key === 'Enter' || ev.key === ' ') && t.getAttribute && t.getAttribute('data-action') === 'region' && t.tagName.toLowerCase() === 'g') { ev.preventDefault(); onAction(t); }
+    if ((ev.key === 'Enter' || ev.key === ' ') && t.getAttribute && t.getAttribute('data-action') === 'dgRegion' && t.tagName.toLowerCase() === 'g') { ev.preventDefault(); onAction(t); }
+    if (ev.key === 'Escape' && menuOpen) { setMenu(false); }
   });
   document.addEventListener('change', function (ev) {
     var t = ev.target;
@@ -992,18 +1155,26 @@
   $('dlg').addEventListener('click', function (ev) { if (ev.target === $('dlg')) { closeDlg(); } });
   window.addEventListener('resize', syncTop);
 
-  /* ---------- fondo: espacio profundo con parallax ---------- */
+  /* ---------- fondo segun entorno de mision ---------- */
   var sky = (function () {
     var cv = document.createElement('canvas'), ctx = cv.getContext && cv.getContext('2d');
-    if (!ctx) return { sync: function () {} };
+    if (!ctx) return { sync: function () {}, set: function () {}, reduced: function () { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } };
     cv.id = 'sky'; cv.setAttribute('aria-hidden', 'true');
     document.body.insertBefore(cv, document.body.firstChild);
     var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
     var W = 0, H = 0, dpr = 1, layers = [], nebula = null, galaxies = [], raf = 0, last = 0, drift = 0;
-    var px = 0, py = 0, tx = 0, ty = 0;
+    var px = 0, py = 0, tx = 0, ty = 0, cur = state.env, prev = null, fadeT = 0, FADE = 1100;
     var CONST = [[.70, .16], [.735, .20], [.77, .215], [.81, .205], [.835, .26], [.79, .29], [.76, .25]];
+    var SC = {
+      transit: { stars: 1, speed: 7, neb: 1, streak: true, sky: [[0, '#020309'], [1, '#04060f']] },
+      station: { stars: .9, speed: 1.2, neb: .55, sky: [[0, '#020309'], [1, '#050b1c']] },
+      moonbase: { stars: .95, speed: .5, neb: .35, sky: [[0, '#020206'], [1, '#07070b']] },
+      marsbase: { stars: .22, speed: .4, neb: 0, sky: [[0, '#140a0a'], [.55, '#4a2216'], [.86, '#b4673f'], [1, '#d39a6c']] },
+      rover: { stars: .4, speed: .6, neb: .1, sky: [[0, '#06060f'], [.6, '#291a28'], [1, '#7a4636']] },
+      earth: { stars: .14, speed: .3, neb: 0, sky: [[0, '#0b1a3c'], [.5, '#33407a'], [.78, '#c27466'], [1, '#f2b46c']] }
+    };
     function rnd(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
-    function moving() { return !mq.matches && state.motion !== false; }
+    function moving() { return !mq.matches; }
     function makeNebula() {
       var c = document.createElement('canvas'), g = c.getContext('2d'); c.width = 640; c.height = 400;
       [[.18, .25, .45, 'rgba(110,60,190,.30)'], [.78, .62, .5, 'rgba(30,120,170,.26)'], [.55, .15, .3, 'rgba(190,60,130,.16)'], [.35, .8, .35, 'rgba(40,90,180,.18)']].forEach(function (n) {
@@ -1032,49 +1203,157 @@
       });
       if (!nebula) { nebula = makeNebula(); galaxies = [{ c: makeGalaxy(70, -.5, 220), x: .12, y: .7 }, { c: makeGalaxy(38, .9, 30), x: .88, y: .48 }]; }
     }
-    function draw(t) {
-      ctx.clearRect(0, 0, W, H);
-      var sy = window.scrollY || 0, mx = px * 30, my = py * 20;
-      ctx.globalAlpha = 1;
-      ctx.drawImage(nebula, -40 - mx * .3, -40 - my * .3 - sy * .02, W + 80, H + 80);
-      galaxies.forEach(function (g) { ctx.globalAlpha = .8; ctx.drawImage(g.c, g.x * W - g.c.width / 2 - mx * .5, g.y * H - g.c.height / 2 - my * .5 - sy * .04); });
+    function lin(y0, y1, stops) { var g = ctx.createLinearGradient(0, y0, 0, y1); stops.forEach(function (s) { g.addColorStop(s[0], s[1]); }); return g; }
+    function hills(y0, amp, fq, ph, color, off, a) {
+      ctx.globalAlpha = a; ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(0, H);
+      for (var x = 0; x <= W + 8; x += 8) { var X = x + off; ctx.lineTo(x, y0 + amp * Math.sin(X * fq + ph) + amp * .45 * Math.sin(X * fq * 2.7 + ph * 1.9)); }
+      ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+    }
+    function disc(x, y, r, stops, a) {
+      var g = ctx.createRadialGradient(x - r * .35, y - r * .35, r * .1, x, y, r); stops.forEach(function (s) { g.addColorStop(s[0], s[1]); });
+      ctx.globalAlpha = a; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+    }
+    function glow(x, y, r, color, a) {
+      var g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, color); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = a; ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    function scene(e, a, t) {
+      var S = SC[e] || SC.transit, sy = window.scrollY || 0, mx = px * 30, my = py * 20;
+      ctx.globalAlpha = a; ctx.fillStyle = lin(0, H, S.sky); ctx.fillRect(0, 0, W, H);
+      if (S.neb) {
+        ctx.globalAlpha = a * S.neb; ctx.drawImage(nebula, -40 - mx * .3, -40 - my * .3 - sy * .02, W + 80, H + 80);
+        if (S.neb > .3) galaxies.forEach(function (g) { ctx.globalAlpha = a * .8 * S.neb; ctx.drawImage(g.c, g.x * W - g.c.width / 2 - mx * .5, g.y * H - g.c.height / 2 - my * .5 - sy * .04); });
+      }
       layers.forEach(function (L, li) {
-        var off = drift * L.speed, dy = sy * L.par;
+        var off = drift * L.speed * S.speed, dy = sy * L.par;
         L.stars.forEach(function (s) {
           var x = ((s.x * W - off - mx * L.par * 4) % W + W) % W, y = ((s.y * H - dy - my * L.par * 4) % H + H) % H;
           var tw = moving() && li < 2 ? .75 + .25 * Math.sin(t / 1000 * s.f + s.p) : 1;
-          ctx.globalAlpha = s.a * tw; ctx.fillStyle = s.c;
+          ctx.globalAlpha = a * S.stars * s.a * tw * (S.stars < .5 ? Math.max(0, 1 - y / (H * .6)) : 1); ctx.fillStyle = s.c;
+          if (S.streak && li > 0 && moving()) { ctx.fillRect(x, y - s.s / 4, s.s * (li === 2 ? 9 : 4), s.s / 2); }
           ctx.beginPath(); ctx.arc(x, y, s.s / 2 + (li === 2 ? .2 : 0), 0, 6.2832); ctx.fill();
-          if (li === 2 && s.s > 1.9) { ctx.globalAlpha = s.a * .25; ctx.fillRect(x - s.s * 2, y - .3, s.s * 4, .6); ctx.fillRect(x - .3, y - s.s * 2, .6, s.s * 4); }
         });
       });
-      var cx = -mx * .6, cy = -sy * .06 - my * .6, pts = CONST.map(function (p) { return [p[0] * W + cx, p[1] * H + cy]; });
-      ctx.globalAlpha = .28; ctx.strokeStyle = '#8fb4ff'; ctx.lineWidth = .8; ctx.beginPath();
-      pts.forEach(function (p, i) { if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); }); ctx.lineTo(pts[3][0], pts[3][1]); ctx.stroke();
-      ctx.globalAlpha = .9; ctx.fillStyle = '#dfe9ff';
-      pts.forEach(function (p) { ctx.beginPath(); ctx.arc(p[0], p[1], 1.6, 0, 6.2832); ctx.fill(); });
+      if (S.stars > .8 && e !== 'transit') {
+        var cx = -mx * .6, cy = -sy * .06 - my * .6, pts = CONST.map(function (p) { return [p[0] * W + cx, p[1] * H + cy]; });
+        ctx.globalAlpha = a * .28; ctx.strokeStyle = '#8fb4ff'; ctx.lineWidth = .8; ctx.beginPath();
+        pts.forEach(function (p, i) { if (i === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]); }); ctx.lineTo(pts[3][0], pts[3][1]); ctx.stroke();
+        ctx.globalAlpha = a * .9; ctx.fillStyle = '#dfe9ff';
+        pts.forEach(function (p) { ctx.beginPath(); ctx.arc(p[0], p[1], 1.6, 0, 6.2832); ctx.fill(); });
+      }
+      var d = drift;
+      if (e === 'station') {
+        var R = Math.max(W, H) * 1.3, ex = W * .5 - mx * .2, ey = H + R * .8 - sy * .03;
+        ctx.globalAlpha = a; ctx.lineWidth = 26; ctx.strokeStyle = 'rgba(110,180,255,.18)'; ctx.beginPath(); ctx.arc(ex, ey, R + 10, 0, 6.2832); ctx.stroke();
+        ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(150,210,255,.35)'; ctx.beginPath(); ctx.arc(ex, ey, R + 2, 0, 6.2832); ctx.stroke();
+        var g = ctx.createRadialGradient(ex - R * .2, ey - R, R * .1, ex, ey, R); g.addColorStop(0, '#5aa9e6'); g.addColorStop(.35, '#1d5a9e'); g.addColorStop(.7, '#0b2a55'); g.addColorStop(1, '#030a18');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(ex, ey, R, 0, 6.2832); ctx.fill();
+        ctx.save(); ctx.beginPath(); ctx.arc(ex, ey, R, 0, 6.2832); ctx.clip();
+        for (var i = 0; i < 9; i++) { var cx2 = ((i * 211 + d * 6) % (W + 300)) - 150, cy2 = ey - R + 20 + (i % 3) * 22; ctx.globalAlpha = a * .18; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(cx2, cy2, 90, 9, 0, 0, 6.2832); ctx.fill(); }
+        ctx.restore();
+        glow(W * .9, H * .78, 160, 'rgba(255,240,200,.35)', a);
+      } else if (e === 'moonbase') {
+        disc(W * .8 - mx * .3, H * .2 - sy * .02, 26, [[0, '#9fd3ff'], [.5, '#2f6db3'], [1, '#0b2246']], a);
+        hills(H * .74 - sy * .03, 10, .006, 1, '#3a3b41', -mx * .4, a);
+        hills(H * .82 - sy * .05, 6, .01, 2, '#6f7178', -mx * .8, a);
+        ctx.globalAlpha = a; ctx.fillStyle = lin(H * .82, H, [[0, 'rgba(150,152,160,.9)'], [1, '#3b3c42']]); ctx.fillRect(0, H * .86 - sy * .05, W, H);
+        [[.15, .9, 40], [.42, .95, 26], [.7, .88, 34], [.9, .97, 20]].forEach(function (c) { ctx.globalAlpha = a * .45; ctx.fillStyle = '#2c2d32'; ctx.beginPath(); ctx.ellipse(c[0] * W - mx * .8, c[1] * H - sy * .05, c[2], c[2] * .22, 0, 0, 6.2832); ctx.fill(); });
+      } else if (e === 'marsbase') {
+        glow(W * .28 - mx * .2, H * .42, 90, 'rgba(170,200,255,.35)', a);
+        disc(W * .28 - mx * .2, H * .42, 7, [[0, '#fff'], [1, '#dbe6ff']], a);
+        hills(H * .7 - sy * .03, 18, .004, .5, '#7a3a26', -mx * .4, a);
+        hills(H * .8 - sy * .05, 10, .009, 2.2, '#93462a', -mx * .8, a);
+        ctx.globalAlpha = a; ctx.fillStyle = lin(H * .84, H, [[0, '#8a3f22'], [1, '#3f1a0f']]); ctx.fillRect(0, H * .86 - sy * .05, W, H);
+      } else if (e === 'rover') {
+        glow(W * .75, H * .7, 220, 'rgba(255,160,110,.25)', a);
+        hills(H * .66 - sy * .02, 26, .003, 0, '#3c2533', -mx * .3 + d * 4, a);
+        hills(H * .75 - sy * .04, 18, .006, 1.3, '#5a2f2b', -mx * .6 + d * 10, a);
+        hills(H * .86 - sy * .06, 12, .011, 2.6, '#743825', -mx + d * 22, a);
+      } else if (e === 'earth') {
+        glow(W * .68, H * .86, Math.max(W, H) * .45, 'rgba(255,200,120,.45)', a);
+        disc(W * .68, H * .86, 26, [[0, '#fff6d8'], [1, '#ffcf7a']], a);
+        hills(H * .8 - sy * .03, 16, .004, .2, '#24304a', -mx * .3, a);
+        hills(H * .88 - sy * .05, 12, .008, 1.7, '#141c2b', -mx * .7, a);
+        for (var k = 0; k < 14; k++) { ctx.globalAlpha = a * (.5 + .5 * Math.sin(t / 900 + k)); ctx.fillStyle = '#ffd27a'; ctx.fillRect((k * 97 % W) - mx * .7, H * .9 + (k * 37 % 30) - sy * .05, 2, 2); }
+      }
       ctx.globalAlpha = 1;
+    }
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      var k = prev && moving() ? Math.min(1, (t - fadeT) / FADE) : 1;
+      if (prev && k < 1) scene(prev, 1, t);
+      scene(cur, k, t);
+      if (k >= 1) prev = null;
     }
     function loop(t) {
       raf = 0;
-      if (!moving() || document.hidden) { draw(t || 0); return; }
+      if (!moving() || document.hidden) { draw(performance.now()); return; }
       var dt = last ? Math.min(t - last, 64) : 16; last = t;
       drift += dt / 1000; px += (tx - px) * .05; py += (ty - py) * .05;
       draw(t); raf = requestAnimationFrame(loop);
     }
     function sync() { last = 0; if (!raf) raf = requestAnimationFrame(loop); }
-    build(); sync();
+    function set(env) {
+      document.documentElement.setAttribute('data-env', env);
+      if (env !== cur) { prev = cur; cur = env; fadeT = performance.now(); }
+      sync();
+    }
+    build(); set(state.env);
     window.addEventListener('resize', function () { build(); sync(); });
     window.addEventListener('scroll', function () { if (!moving()) sync(); }, { passive: true });
     window.addEventListener('pointermove', function (e) { if (moving()) { tx = e.clientX / W - .5; ty = e.clientY / H - .5; } }, { passive: true });
     document.addEventListener('visibilitychange', sync);
     var wasCompact = window.innerWidth <= 640;
-    window.addEventListener('resize', function () { var c = window.innerWidth <= 640; if (c !== wasCompact) { wasCompact = c; if (state.tab === 'body') renderBody(); } });
-    if (mq.addEventListener) mq.addEventListener('change', function () { sync(); renderFooter(); });
-    return { sync: sync, reduced: function () { return mq.matches; } };
+    window.addEventListener('resize', function () { var c = window.innerWidth <= 640; if (c !== wasCompact) { wasCompact = c; if (state.tab === 'diag') renderDiag(); } });
+    if (mq.addEventListener) mq.addEventListener('change', sync);
+    return { sync: sync, set: set, reduced: function () { return mq.matches; } };
+  })();
+
+  /* ---------- pantalla de carga: salto al hiperespacio ---------- */
+  (function boot() {
+    var el = $('boot');
+    if (!el) return;
+    var cv = el.querySelector('canvas'), g = cv.getContext && cv.getContext('2d');
+    var reduced = sky.reduced(), t0 = 0, done = false, W, H, stars = [], i;
+    var skip = el.querySelector('.boot-skip'); if (skip) skip.textContent = u('bootSkip');
+    function size() { var d = Math.min(window.devicePixelRatio || 1, 2); W = window.innerWidth; H = window.innerHeight; cv.width = W * d; cv.height = H * d; g.setTransform(d, 0, 0, d, 0, 0); }
+    function finish() {
+      if (done) return; done = true;
+      el.classList.add('out');
+      setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); var f = document.querySelector('.role-card') || $('main'); if (f && f.focus) f.focus({ preventScroll: true }); }, reduced ? 250 : 650);
+    }
+    if (!g) { finish(); return; }
+    size();
+    for (i = 0; i < 520; i++) stars.push({ x: Math.random() * 2 - 1, y: Math.random() * 2 - 1, z: Math.random() });
+    function frame(t) {
+      if (done) return;
+      if (!t0) t0 = t;
+      var e = t - t0, cx = W / 2, cy = H / 2, f = Math.max(W, H) * .6;
+      var v = reduced ? 0 : .0015 + Math.pow(Math.min(e / 1700, 1), 3) * .065;
+      g.globalAlpha = reduced ? 1 : .35; g.fillStyle = '#000'; g.fillRect(0, 0, W, H); g.globalAlpha = 1;
+      stars.forEach(function (s) {
+        var z0 = s.z; s.z -= v; if (s.z <= .02) { s.z = 1; s.x = Math.random() * 2 - 1; s.y = Math.random() * 2 - 1; return; }
+        var x1 = cx + s.x / s.z * f * .5, y1 = cy + s.y / s.z * f * .5, x0 = cx + s.x / z0 * f * .5, y0 = cy + s.y / z0 * f * .5;
+        var b = Math.min(1, (1 - s.z) * 1.4);
+        g.strokeStyle = 'rgba(' + (190 + 65 * b | 0) + ',' + (215 + 40 * b | 0) + ',255,' + b + ')'; g.lineWidth = Math.max(.6, (1 - s.z) * 2.4);
+        g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1 + (reduced ? .8 : 0), y1); g.stroke();
+      });
+      if (!reduced && e > 1650 && e < 2300) { g.globalAlpha = Math.max(0, 1 - Math.abs(e - 1850) / 450); g.fillStyle = '#e8f1ff'; g.fillRect(0, 0, W, H); g.globalAlpha = 1; }
+      if (e > (reduced ? 100 : 1800)) el.classList.add('show');
+      if (e > (reduced ? 1500 : 3300)) { finish(); return; }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    el.addEventListener('click', finish);
+    document.addEventListener('keydown', function (ev) { if (!done && (ev.key === 'Escape' || ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); finish(); } });
+    window.addEventListener('resize', function () { if (!done) size(); });
   })();
 
   render();
+  var shownDay = today();
+  function checkDay() { if (today() !== shownDay) { shownDay = today(); render(); } }
+  setInterval(checkDay, 60000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) checkDay(); });
   var p = pendingToday().length;
   if (entriesOf().length && p > 0) { toast(u('reminder') + ': ' + p + ' ' + u('pendingN')); }
 

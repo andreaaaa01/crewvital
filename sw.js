@@ -1,7 +1,7 @@
 /* CrewVital - service worker (CC0). Guarda la app para usarla sin conexion.
    Al publicar cambios, sube el numero de VERSION para renovar la cache. */
-var VERSION = 'crewvital-v3.1';
-var FILES = ['./', 'index.html', 'styles.css', 'data.js', 'app.js', 'manifest.json', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'];
+var VERSION = 'crewvital-v4.0';
+var FILES = ['./', 'index.html', 'styles.css', 'data.js', 'app.js', 'manifest.json', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'nasa-logo.svg'];
 
 self.addEventListener('install', function (ev) {
   ev.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));

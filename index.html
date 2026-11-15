@@ -12,10 +12,12 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div id="boot"><canvas aria-hidden="true"></canvas><div class="boot-brand"><img src="nasa-logo.svg" alt="NASA" width="110" height="92"><b>CrewVital</b><span>Monitoreo de salud para tripulaciones · Crew health monitoring</span></div><button class="boot-skip" type="button">Saltar intro</button></div>
 <a class="skip" href="#main">Saltar al contenido / Skip to content</a>
 <header id="top"></header>
-<nav id="tabs" role="tablist" aria-label="Secciones / Sections"></nav>
-<main id="main" role="tabpanel" tabindex="-1"></main>
+<nav id="drawer" aria-label="Menú / Menu" aria-hidden="true" inert></nav>
+<div id="scrim" data-action="menuClose" aria-hidden="true"></div>
+<main id="main" tabindex="-1"></main>
 <footer id="foot"></footer>
 <dialog id="dlg"></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
