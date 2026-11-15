@@ -373,17 +373,18 @@
     if (!s || typeof s !== 'object') return d;
     if (s.lang === 'es' || s.lang === 'en') d.lang = s.lang;
     if (typeof s.env === 'string' && ENVS.hasOwnProperty(s.env)) d.env = s.env;
-    if (TABS.indexOf(s.tab) >= 0) d.tab = s.tab;
+    /* Cada visita al enlace vuelve a la pantalla de inicio (elegir rol).
+       Los datos de tripulacion y mediciones si se conservan. */
+    d.tab = 'dashboard';
+    d.role = null;
+    d.medMode = null;
+    d.dg = { mode: null, region: null };
+    d.em = { sc: null, node: null };
     if (byId(s.sel)) d.sel = s.sel;
-    if (typeof s.region === 'string' && REGIONS.hasOwnProperty(s.region)) d.region = s.region;
-    if (s.role === 'crew' || s.role === 'medic') d.role = s.role;
     if (typeof s.bg === 'boolean') d.bg = s.bg;
-    if (s.medMode === 'onsite' || s.medMode === 'remote') d.medMode = s.medMode;
     if (s.phase === 'post') d.phase = 'post';
     if (s.remote) d.remote = cleanSnap(s.remote);
     if (s.note && typeof s.note.sit === 'string' && typeof s.note.steps === 'string') d.note = { sit: s.note.sit, steps: s.note.steps, ts: s.note.ts || 0 };
-    if (s.tab === 'body' || s.tab === 'measure') d.tab = 'diag';
-    if (s.dg && (s.dg.mode === 'general' || s.dg.mode === 'specific')) d.dg = { mode: s.dg.mode, region: REGIONS.hasOwnProperty(s.dg.region) ? s.dg.region : null };
     if (typeof s.guide === 'boolean') d.guide = s.guide;
     if (typeof s.scn === 'string') d.scn = s.scn;
     if (/^\d{4}-\d{2}-\d{2}$/.test(s.missionStart || '')) d.missionStart = s.missionStart;
