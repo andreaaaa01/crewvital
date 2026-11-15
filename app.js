@@ -793,11 +793,15 @@
   /* ---------- render: diagnostico (general / especifico) ---------- */
   var ORDER = Object.keys(REGIONS).reduce(function (a, r) { return a.concat(REGIONS[r].inds); }, []);
   function dgSeq() { return state.dg.mode === 'general' ? ORDER : (state.dg.region ? REGIONS[state.dg.region].inds : []); }
-  function firstPending(seq) { var t = today(); for (var i = 0; i < seq.length; i++) if (!hasEntry(seq[i], t)) return seq[i]; return null; }
+  function dgDone(id, t) {
+    if (!(state.role === 'medic' && state.medMode === 'onsite')) return hasEntry(id, t);
+    return state.entries.some(function (e) { return e.who === state.who && e.ind === id && e.day === t && e.phase === state.phase; });
+  }
+  function firstPending(seq) { var t = today(); for (var i = 0; i < seq.length; i++) if (!dgDone(seq[i], t)) return seq[i]; return null; }
   function dgCurrent(seq) { return seq.indexOf(state.sel) >= 0 ? state.sel : (firstPending(seq) || seq[0]); }
   function dgNext(seq, cur) {
     var t = today(), i = seq.indexOf(cur);
-    for (var k = 1; k < seq.length; k++) { var id = seq[(i + k) % seq.length]; if (!hasEntry(id, t)) return id; }
+    for (var k = 1; k < seq.length; k++) { var id = seq[(i + k) % seq.length]; if (!dgDone(id, t)) return id; }
     return null;
   }
   function measureForm(ind) {
@@ -837,7 +841,7 @@
     if (cur) state.sel = cur;
     state.region = cur ? byId(cur).region : dg.region;
     if (seq.length) {
-      var done = seq.filter(function (id) { return hasEntry(id, t); }).length;
+      var done = seq.filter(function (id) { return dgDone(id, t); }).length;
       h += '<div class="dg-prog"><div class="row" style="justify-content:space-between"><b>' + esc(u('dgProgress')) + (dg.mode === 'specific' ? ' · ' + esc(T(REGIONS[dg.region].name)) : '') + '</b><span class="stat-sm">' + done + '/' + seq.length + '</span></div>' +
         '<div class="bar" role="progressbar" aria-label="' + esc(u('dgProgress')) + '" aria-valuemin="0" aria-valuemax="' + seq.length + '" aria-valuenow="' + done + '"><i style="width:' + Math.round(100 * done / seq.length) + '%"></i></div></div>';
     }
@@ -848,7 +852,7 @@
     if (!cur) { panel = '<div class="box dg-hint"><p>' + esc(u('dgPickRegion')) + '</p></div>'; }
     else {
       panel = '<ol class="dg-steps">' + seq.map(function (id) {
-        var l = latest(id), ok = hasEntry(id, t);
+        var l = latest(id), ok = dgDone(id, t);
         return '<li><button data-action="dgInd" data-v="' + id + '" class="' + (ok ? 'done' : '') + (id === cur ? ' on' : '') + '"' + (id === cur ? ' aria-current="step"' : '') + '><span class="ck" aria-hidden="true">' + (ok ? '&#10003;' : '') + '</span>' + esc(T(byId(id).name)) + (ok && l ? ' ' + badge(l.state) : '') + '</button></li>';
       }).join('') + '</ol>';
       if (lastResult && lastResult.e.ind === cur) panel += dgResult(lastResult, seq);
