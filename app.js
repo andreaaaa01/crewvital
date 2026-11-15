@@ -1064,7 +1064,7 @@
     refresh();
     renderHeader(); renderTabs(); renderFooter();
     if (typeof sky !== 'undefined' && sky) sky.set(state.env);
-    if (!state.role) { renderRole(); return; }
+    if (!state.role && state.tab !== 'emergency') { renderRole(); return; }
     var t = state.tab;
     if (t === 'dashboard') renderDashboard();
     else if (t === 'diag') renderDiag();
