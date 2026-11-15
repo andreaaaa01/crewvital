@@ -514,7 +514,7 @@
         }).join('') + '</div>';
       }).join('') +
       '<div class="lang dr-lang" role="group" aria-label="' + esc(u('setLang')) + '"><button data-action="lang" data-v="es" aria-pressed="' + (state.lang === 'es') + '">ES</button><button data-action="lang" data-v="en" aria-pressed="' + (state.lang === 'en') + '">EN</button></div>';
-    $('main').setAttribute('aria-label', state.role ? navLabel(state.tab) : u('roleTitle'));
+    $('main').setAttribute('aria-label', state.role || state.tab === 'emergency' ? navLabel(state.tab) : u('roleTitle'));
     setMenu(menuOpen, true);
   }
   var menuOpen = false;
