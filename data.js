@@ -1,6 +1,6 @@
 /* CrewVital - contenido y umbrales (dominio publico, CC0).
    Los umbrales son valores de referencia generales para adultos y deben ser validados
-   por un cirujano de vuelo. Cada indicador admite un campo opcional
+   por un auxiliar. Cada indicador admite un campo opcional
    src: { t: 'titulo', u: 'url' } con la fuente de sus umbrales; si falta, la app
    muestra "fuente por confirmar". No es un dispositivo medico. */
 
@@ -43,7 +43,7 @@ var ENVS = {
     delay: { es: 'Crece con la distancia (hasta unos 22 min por trayecto, 44 min ida y vuelta)', en: 'Grows with distance (up to ~22 min one way, 44 min round trip)' },
     evac: { es: 'Sin retorno inmediato: semanas a meses', en: 'No immediate return: weeks to months' },
     hazards: ['radiation', 'distance', 'isolation', 'gravity', 'closed'],
-    escalate: { es: 'el cirujano de vuelo en Tierra', en: 'the ground flight surgeon' },
+    escalate: { es: 'el auxiliar en Tierra', en: 'the ground auxiliary' },
     note: { es: 'La respuesta puede tardar: actúa con autonomía y deja un mensaje completo.', en: 'The reply may be delayed: act autonomously and leave a complete message.' }
   },
   station: {
@@ -52,7 +52,7 @@ var ENVS = {
     delay: { es: 'Casi inmediata (segundos)', en: 'Near real time (seconds)' },
     evac: { es: 'Retorno posible en el orden de horas', en: 'Return possible within hours' },
     hazards: ['gravity', 'isolation', 'closed', 'radiation'],
-    escalate: { es: 'el cirujano de vuelo en Tierra', en: 'the ground flight surgeon' },
+    escalate: { es: 'el auxiliar en Tierra', en: 'the ground auxiliary' },
     note: { es: 'La comunicación es casi inmediata: pide apoyo en tiempo real.', en: 'Communication is near real time: ask for live support.' }
   },
   moonbase: {
@@ -61,7 +61,7 @@ var ENVS = {
     delay: { es: 'Corta (unos 1,3 s por trayecto)', en: 'Short (about 1.3 s one way)' },
     evac: { es: 'Retorno a la Tierra en días', en: 'Return to Earth in days' },
     hazards: ['radiation', 'gravity', 'closed', 'distance'],
-    escalate: { es: 'el cirujano de vuelo en Tierra', en: 'the ground flight surgeon' },
+    escalate: { es: 'el auxiliar en Tierra', en: 'the ground auxiliary' },
     note: { es: 'Retraso corto: puedes dialogar con Tierra, pero el retorno tarda días.', en: 'Short delay: you can talk to Earth, but return takes days.' }
   },
   marsbase: {
@@ -70,7 +70,7 @@ var ENVS = {
     delay: { es: 'De unos 3 a 22 min por trayecto', en: 'About 3 to 22 min one way' },
     evac: { es: 'Sin evacuación posible durante meses', en: 'No evacuation possible for months' },
     hazards: ['distance', 'radiation', 'gravity', 'isolation', 'closed'],
-    escalate: { es: 'el cirujano de vuelo en Tierra', en: 'the ground flight surgeon' },
+    escalate: { es: 'el auxiliar en Tierra', en: 'the ground auxiliary' },
     note: { es: 'No esperes respuesta inmediata: actúa con autonomía y deja un mensaje completo.', en: 'Do not expect an immediate reply: act autonomously and leave a complete message.' }
   },
   rover: {
@@ -79,7 +79,7 @@ var ENVS = {
     delay: { es: 'Depende de la ubicación', en: 'Depends on location' },
     evac: { es: 'Regreso a la base en horas', en: 'Return to base in hours' },
     hazards: ['closed', 'radiation', 'gravity', 'distance'],
-    escalate: { es: 'la base y el cirujano de vuelo', en: 'the base and the flight surgeon' },
+    escalate: { es: 'la base y el auxiliar', en: 'the base and the auxiliary' },
     note: { es: 'Avisa a la base y prepara el regreso si el valor es crítico.', en: 'Alert the base and prepare to return if the value is critical.' }
   },
   earth: {
@@ -160,12 +160,12 @@ var IND = [
     actions: {
       normal: { es: 'Todo en rango. Mantén tu ejercicio e hidratación.', en: 'All in range. Keep up your exercise and hydration.' },
       caution: {
-        es: ['Descansa 10 minutos y repite la medición.', 'Revisa tu hidratación y el consumo de sal.', 'Si sigue fuera de rango, avísale al cirujano de vuelo en la próxima comunicación.'],
-        en: ['Rest 10 minutes and measure again.', 'Check your hydration and salt intake.', 'If it stays out of range, tell the flight surgeon at the next scheduled contact.']
+        es: ['Descansa 10 minutos y repite la medición.', 'Revisa tu hidratación y el consumo de sal.', 'Si sigue fuera de rango, avísale al auxiliar en la próxima comunicación.'],
+        en: ['Rest 10 minutes and measure again.', 'Check your hydration and salt intake.', 'If it stays out of range, tell the auxiliary at the next scheduled contact.']
       },
       critical: {
-        es: ['Detente, sujétate con seguridad y repite la medición para confirmar.', 'Si hay dolor de pecho, falta de aire, mareo intenso o confusión, abre el Modo Emergencia.', 'Avisa de inmediato al cirujano de vuelo.'],
-        en: ['Stop, secure yourself, and repeat the measurement to confirm.', 'If there is chest pain, shortness of breath, severe dizziness, or confusion, open Emergency Mode.', 'Tell the flight surgeon immediately.']
+        es: ['Detente, sujétate con seguridad y repite la medición para confirmar.', 'Si hay dolor de pecho, falta de aire, mareo intenso o confusión, abre el Modo Emergencia.', 'Avisa de inmediato al auxiliar.'],
+        en: ['Stop, secure yourself, and repeat the measurement to confirm.', 'If there is chest pain, shortness of breath, severe dizziness, or confusion, open Emergency Mode.', 'Tell the auxiliary immediately.']
       }
     }
   },
@@ -190,12 +190,12 @@ var IND = [
     actions: {
       normal: { es: 'Todo en rango. Sigue con tu rutina.', en: 'All in range. Keep your routine.' },
       caution: {
-        es: ['Descansa y repite en 10 minutos.', 'Revisa hidratación, cafeína, sueño y estrés.', 'Informa al cirujano de vuelo si se mantiene.'],
-        en: ['Rest and measure again in 10 minutes.', 'Check hydration, caffeine, sleep, and stress.', 'Tell the flight surgeon if it persists.']
+        es: ['Descansa y repite en 10 minutos.', 'Revisa hidratación, cafeína, sueño y estrés.', 'Informa al auxiliar si se mantiene.'],
+        en: ['Rest and measure again in 10 minutes.', 'Check hydration, caffeine, sleep, and stress.', 'Tell the auxiliary if it persists.']
       },
       critical: {
-        es: ['Sujétate en reposo y repite la medición.', 'Si hay dolor de pecho, desmayo o falta de aire, abre el Modo Emergencia.', 'Avisa de inmediato al cirujano de vuelo.'],
-        en: ['Secure yourself at rest and measure again.', 'If there is chest pain, fainting, or shortness of breath, open Emergency Mode.', 'Tell the flight surgeon immediately.']
+        es: ['Sujétate en reposo y repite la medición.', 'Si hay dolor de pecho, desmayo o falta de aire, abre el Modo Emergencia.', 'Avisa de inmediato al auxiliar.'],
+        en: ['Secure yourself at rest and measure again.', 'If there is chest pain, fainting, or shortness of breath, open Emergency Mode.', 'Tell the auxiliary immediately.']
       }
     }
   },
@@ -220,12 +220,12 @@ var IND = [
     actions: {
       normal: { es: 'Todo en rango.', en: 'All in range.' },
       caution: {
-        es: ['Repite en 30 minutos y toma líquidos.', 'Revisa la temperatura de la cabina o del traje.', 'Si hay síntomas de infección, sepárate de los demás y avisa al cirujano de vuelo.'],
-        en: ['Measure again in 30 minutes and drink fluids.', 'Check cabin or suit temperature.', 'If there are infection symptoms, separate from others and tell the flight surgeon.']
+        es: ['Repite en 30 minutos y toma líquidos.', 'Revisa la temperatura de la cabina o del traje.', 'Si hay síntomas de infección, sepárate de los demás y avisa al auxiliar.'],
+        en: ['Measure again in 30 minutes and drink fluids.', 'Check cabin or suit temperature.', 'If there are infection symptoms, separate from others and tell the auxiliary.']
       },
       critical: {
-        es: ['Fiebre alta o temperatura muy baja: avisa de inmediato al cirujano de vuelo.', 'Enfría o abriga según el caso.', 'Si es fiebre, aísla al tripulante del resto.'],
-        en: ['High fever or very low temperature: tell the flight surgeon immediately.', 'Cool or warm the person as needed.', 'If it is fever, isolate the crew member from others.']
+        es: ['Fiebre alta o temperatura muy baja: avisa de inmediato al auxiliar.', 'Enfría o abriga según el caso.', 'Si es fiebre, aísla al tripulante del resto.'],
+        en: ['High fever or very low temperature: tell the auxiliary immediately.', 'Cool or warm the person as needed.', 'If it is fever, isolate the crew member from others.']
       }
     }
   },
@@ -250,12 +250,12 @@ var IND = [
     actions: {
       normal: { es: 'Todo en rango.', en: 'All in range.' },
       caution: {
-        es: ['Respira profundo y repite en 5 minutos.', 'Revisa los parámetros de la cabina (oxígeno, CO2 y presión).', 'Avisa al cirujano de vuelo.'],
-        en: ['Breathe deeply and measure again in 5 minutes.', 'Check cabin parameters (oxygen, CO2, and pressure).', 'Tell the flight surgeon.']
+        es: ['Respira profundo y repite en 5 minutos.', 'Revisa los parámetros de la cabina (oxígeno, CO2 y presión).', 'Avisa al auxiliar.'],
+        en: ['Breathe deeply and measure again in 5 minutes.', 'Check cabin parameters (oxygen, CO2, and pressure).', 'Tell the auxiliary.']
       },
       critical: {
-        es: ['Verifica de inmediato la atmósfera de la cabina.', 'Si hay falta de aire, usa el oxígeno de emergencia si está disponible y abre el Modo Emergencia.', 'Avisa de inmediato al cirujano de vuelo.'],
-        en: ['Immediately check the cabin atmosphere.', 'If short of breath, use emergency oxygen if available and open Emergency Mode.', 'Tell the flight surgeon immediately.']
+        es: ['Verifica de inmediato la atmósfera de la cabina.', 'Si hay falta de aire, usa el oxígeno de emergencia si está disponible y abre el Modo Emergencia.', 'Avisa de inmediato al auxiliar.'],
+        en: ['Immediately check the cabin atmosphere.', 'If short of breath, use emergency oxygen if available and open Emergency Mode.', 'Tell the auxiliary immediately.']
       }
     }
   },
@@ -280,12 +280,12 @@ var IND = [
     actions: {
       normal: { es: 'Todo en rango.', en: 'All in range.' },
       caution: {
-        es: ['Si está alta: toma agua, revisa tu comida y repite en 2 horas.', 'Si está baja: toma una fuente rápida de azúcar y repite en 15 minutos.', 'Informa al cirujano de vuelo si se repite.'],
-        en: ['If high: drink water, review your meal, and measure again in 2 hours.', 'If low: take a quick sugar source and measure again in 15 minutes.', 'Tell the flight surgeon if it repeats.']
+        es: ['Si está alta: toma agua, revisa tu comida y repite en 2 horas.', 'Si está baja: toma una fuente rápida de azúcar y repite en 15 minutos.', 'Informa al auxiliar si se repite.'],
+        en: ['If high: drink water, review your meal, and measure again in 2 hours.', 'If low: take a quick sugar source and measure again in 15 minutes.', 'Tell the auxiliary if it repeats.']
       },
       critical: {
-        es: ['Si es muy baja: toma azúcar de inmediato; si hay confusión, pide ayuda a otro tripulante.', 'Si es muy alta: avisa de inmediato al cirujano de vuelo.', 'No esperes a la comunicación programada.'],
-        en: ['If very low: take sugar immediately; if confused, ask another crew member for help.', 'If very high: tell the flight surgeon immediately.', 'Do not wait for the scheduled contact.']
+        es: ['Si es muy baja: toma azúcar de inmediato; si hay confusión, pide ayuda a otro tripulante.', 'Si es muy alta: avisa de inmediato al auxiliar.', 'No esperes a la comunicación programada.'],
+        en: ['If very low: take sugar immediately; if confused, ask another crew member for help.', 'If very high: tell the auxiliary immediately.', 'Do not wait for the scheduled contact.']
       }
     }
   },
@@ -310,12 +310,12 @@ var IND = [
     actions: {
       normal: { es: 'Todo en rango. Mantén el horario.', en: 'All in range. Keep your schedule.' },
       caution: {
-        es: ['Revisa la luz y el horario de la cabina.', 'Evita pantallas y cafeína antes de dormir.', 'Si dura más de 3 días, habla con el apoyo psicológico o el cirujano de vuelo.'],
-        en: ['Check cabin lighting and schedule.', 'Avoid screens and caffeine before sleep.', 'If it lasts more than 3 days, talk to psychological support or the flight surgeon.']
+        es: ['Revisa la luz y el horario de la cabina.', 'Evita pantallas y cafeína antes de dormir.', 'Si dura más de 3 días, habla con el apoyo psicológico o el auxiliar.'],
+        en: ['Check cabin lighting and schedule.', 'Avoid screens and caffeine before sleep.', 'If it lasts more than 3 days, talk to psychological support or the auxiliary.']
       },
       critical: {
-        es: ['Informa al cirujano de vuelo y al apoyo psicológico.', 'Reduce tareas críticas hasta recuperarte.', 'Pide a un compañero que revise tus tareas.'],
-        en: ['Tell the flight surgeon and psychological support.', 'Reduce critical tasks until you recover.', 'Ask a teammate to double-check your tasks.']
+        es: ['Informa al auxiliar y al apoyo psicológico.', 'Reduce tareas críticas hasta recuperarte.', 'Pide a un compañero que revise tus tareas.'],
+        en: ['Tell the auxiliary and psychological support.', 'Reduce critical tasks until you recover.', 'Ask a teammate to double-check your tasks.']
       }
     }
   },
@@ -344,8 +344,8 @@ var IND = [
         en: ['Talk to a trusted teammate.', 'Keep your routine and do something you enjoy.', 'If it lasts 3 days, tell psychological support.']
       },
       critical: {
-        es: ['Informa hoy mismo al apoyo psicológico y al cirujano de vuelo.', 'No te quedes solo: avisa a un compañero.', 'Si hay pensamientos de hacerte daño, abre el Modo Emergencia.'],
-        en: ['Tell psychological support and the flight surgeon today.', 'Do not stay alone: tell a teammate.', 'If you have thoughts of harming yourself, open Emergency Mode.']
+        es: ['Informa hoy mismo al apoyo psicológico y al auxiliar.', 'No te quedes solo: avisa a un compañero.', 'Si hay pensamientos de hacerte daño, abre el Modo Emergencia.'],
+        en: ['Tell psychological support and the auxiliary today.', 'Do not stay alone: tell a teammate.', 'If you have thoughts of harming yourself, open Emergency Mode.']
       }
     }
   },
@@ -372,12 +372,12 @@ var IND = [
     actions: {
       normal: { es: 'Menos del 50% del límite de carrera. Sigue el principio ALARA.', en: 'Below 50% of the career limit. Keep following ALARA.' },
       caution: {
-        es: ['Reduce el tiempo en zonas con menos blindaje.', 'Revisa el plan de misión para minimizar la dosis (ALARA).', 'Informa al cirujano de vuelo.'],
-        en: ['Reduce time in less-shielded areas.', 'Review the mission plan to minimize dose (ALARA).', 'Tell the flight surgeon.']
+        es: ['Reduce el tiempo en zonas con menos blindaje.', 'Revisa el plan de misión para minimizar la dosis (ALARA).', 'Informa al auxiliar.'],
+        en: ['Reduce time in less-shielded areas.', 'Review the mission plan to minimize dose (ALARA).', 'Tell the auxiliary.']
       },
       critical: {
-        es: ['Informa de inmediato al cirujano de vuelo y a control de misión.', 'La dosis se acerca al límite de carrera: revisa el plan de misión.', 'Usa el refugio con más blindaje durante eventos solares.'],
-        en: ['Tell the flight surgeon and mission control immediately.', 'Dose is nearing the career limit: review the mission plan.', 'Use the best-shielded shelter during solar events.']
+        es: ['Informa de inmediato al auxiliar y a control de misión.', 'La dosis se acerca al límite de carrera: revisa el plan de misión.', 'Usa el refugio con más blindaje durante eventos solares.'],
+        en: ['Tell the auxiliary and mission control immediately.', 'Dose is nearing the career limit: review the mission plan.', 'Use the best-shielded shelter during solar events.']
       }
     }
   },
@@ -402,8 +402,8 @@ var IND = [
     actions: {
       normal: { es: 'Meta cumplida.', en: 'Goal met.' },
       caution: {
-        es: ['Haz una sesión corta hoy.', 'Prioriza ejercicio de fuerza.', 'Revisa nutrición y vitamina D con el cirujano de vuelo.'],
-        en: ['Do a short session today.', 'Prioritize strength exercise.', 'Review nutrition and vitamin D with the flight surgeon.']
+        es: ['Haz una sesión corta hoy.', 'Prioriza ejercicio de fuerza.', 'Revisa nutrición y vitamina D con el auxiliar.'],
+        en: ['Do a short session today.', 'Prioritize strength exercise.', 'Review nutrition and vitamin D with the auxiliary.']
       }
     }
   },
@@ -428,12 +428,12 @@ var IND = [
     actions: {
       normal: { es: 'Todo en rango.', en: 'All in range.' },
       caution: {
-        es: ['Come algo extra con proteínas y calorías.', 'Revisa el menú y las alternativas con el cirujano de vuelo.', 'Aumenta los líquidos.'],
-        en: ['Eat something extra with protein and calories.', 'Review the menu and alternatives with the flight surgeon.', 'Increase fluids.']
+        es: ['Come algo extra con proteínas y calorías.', 'Revisa el menú y las alternativas con el auxiliar.', 'Aumenta los líquidos.'],
+        en: ['Eat something extra with protein and calories.', 'Review the menu and alternatives with the auxiliary.', 'Increase fluids.']
       },
       critical: {
-        es: ['Avisa hoy al cirujano de vuelo.', 'Evita ayunos largos: fracciona las comidas.', 'Vigila glucosa, ánimo y energía.'],
-        en: ['Tell the flight surgeon today.', 'Avoid long fasts: split meals into small portions.', 'Watch glucose, mood, and energy.']
+        es: ['Avisa hoy al auxiliar.', 'Evita ayunos largos: fracciona las comidas.', 'Vigila glucosa, ánimo y energía.'],
+        en: ['Tell the auxiliary today.', 'Avoid long fasts: split meals into small portions.', 'Watch glucose, mood, and energy.']
       }
     }
   }
