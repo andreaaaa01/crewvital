@@ -1195,10 +1195,17 @@
     download(d.blob(snapCode(snap)), 'CrewVital_Informe_' + who + '_Dia' + snap.day + '_' + fileDate(snap.gen) + '.pdf');
     toast(u('reportDone'));
   }
+  function mEnv() { return state.remote ? state.remote.env : state.env; }
+  function mDay() {
+    var r = state.remote;
+    if (!r) return today();
+    if (r.start) { var p = r.start.split('-'); return Math.round((midnight(Date.now()) - new Date(+p[0], +p[1] - 1, +p[2]).getTime()) / 86400000) + 1; }
+    return r.day;
+  }
   function medicPdf() {
     var snap = state.remote, d = PdfDoc(u('rMedTitle')), now = Date.now();
-    d.header(u('rMedTitle'), T(ENVS[state.env].name) + ' · ' + u('day') + ' ' + today());
-    [[u('rGenBy'), u('role_medic')], [u('env'), T(ENVS[state.env].name)], [u('day'), String(today())], [u('rDate'), dateTime(now)], [u('delay'), T(ENVS[state.env].delay)]].forEach(function (r) {
+    d.header(u('rMedTitle'), T(ENVS[mEnv()].name) + ' · ' + u('day') + ' ' + mDay());
+    [[u('rGenBy'), u('role_medic')], [u('env'), T(ENVS[mEnv()].name)], [u('day'), String(mDay())], [u('rDate'), dateTime(now)], [u('delay'), T(ENVS[mEnv()].delay)]].forEach(function (r) {
       d.text(d.M, d.y() + 10, r[0] + ':', 9.5, true); d.text(d.M + 150, d.y() + 10, r[1], 9.5); d.y(d.y() + 15);
     });
     d.h2(u('noteSit')); d.para(state.note.sit || '-', 10.5);
@@ -1211,12 +1218,12 @@
         return [c.name, { t: stateText(c.overall), bg: stateRgb(c.overall) }, bad.join('; ') || u(c.overall < 0 ? 'crewNoData' : 'allInRange')];
       }));
     }
-    download(d.blob(), 'CrewVital_InformeMedico_Dia' + today() + '_' + fileDate(now) + '.pdf');
+    download(d.blob(), 'CrewVital_InformeMedico_Dia' + mDay() + '_' + fileDate(now) + '.pdf');
     toast(u('reportDone'));
   }
   function noteSteps() { return String(state.note.steps || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }
   function crewMessage() {
-    var L = [u('msgHead'), dateTime(Date.now()) + ' · ' + T(ENVS[state.env].name) + ' · ' + u('day') + ' ' + today(), u('delay') + ': ' + T(ENVS[state.env].delay), ''];
+    var L = [u('msgHead'), dateTime(Date.now()) + ' · ' + T(ENVS[mEnv()].name) + ' · ' + u('day') + ' ' + mDay(), u('delay') + ': ' + T(ENVS[mEnv()].delay), ''];
     if (state.note.sit) L.push(u('noteSit') + ':', state.note.sit, '');
     var st = noteSteps();
     if (st.length) { L.push(u('noteSteps').replace(/ \(.*\)$/, '') + ':'); st.forEach(function (s, i) { L.push((i + 1) + '. ' + s); }); L.push(''); }
